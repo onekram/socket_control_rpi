@@ -3,7 +3,7 @@ import time
 from color import Color
 from servokind import ServoKind
 
-host = "192.168.1.107"
+host = "192.168.2.99"
 port = 2001
 
 def send_command(s, command1):
@@ -91,10 +91,18 @@ def move_servo(s: socket.socket, servo: ServoKind, angle: int):
     s.sendall(ba)
 
 def hand(s: socket.socket):
-    move_servo(s, ServoKind.GRAB, 10)
-    time.sleep(1)
+    for i in range(1, 5):
+        move_servo(s, ServoKind.GRAB, i * 20)
+        time.sleep(2)
+
+def start_position(s: socket.socket):
+    move_servo(s, ServoKind.HAND, 0)
+    move_servo(s, ServoKind.GRAB, 80)
+    move_servo(s, ServoKind.SHOULDER, 180)
+    move_servo(s, ServoKind.ELBOW, 100)
+
 
 if __name__ == "__main__":
     s = create_connect()
-    hand(s)
+    snake(s)
     turn_off_all(s)
