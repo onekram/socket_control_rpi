@@ -1,6 +1,7 @@
 import socket
 import time
 from color import Color
+from servokind import ServoKind
 
 host = "192.168.1.107"
 port = 2001
@@ -83,7 +84,17 @@ def play_color_index(s: socket.socket, color: Color, idx: int):
 def turn_off_index(s: socket.socket, idx: int):
     play_color_index(s, Color.NO_COLOR, idx)
 
+def move_servo(s: socket.socket, servo: ServoKind, angle: int):
+    ba = bytearray(b'\xab\x01\x00\x00\xff')
+    ba[2] = servo.value
+    ba[3] = angle
+    s.sendall(ba)
+
+def hand(s: socket.socket):
+    move_servo(s, ServoKind.GRAB, 10)
+    time.sleep(1)
+
 if __name__ == "__main__":
     s = create_connect()
-    snake(s)
+    hand(s)
     turn_off_all(s)
