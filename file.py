@@ -1,7 +1,6 @@
 import socket
 import time
 from color import Color
-form ser
 
 host = "192.168.1.107"
 port = 2001
