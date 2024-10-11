@@ -1,6 +1,6 @@
 from enum import Enum
 
-class Servo(Enum):
+class ServoKind(Enum):
     SHOULDER = 1
     ELBOW = 2
     HAND = 3
