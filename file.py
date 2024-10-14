@@ -26,6 +26,7 @@ def create_connect():
     except socket.error as e:
         print(f"Ошибка сокета, закрываем соединение: {e}")
         s.close()
+        raise e
 
 def turn_off_all(s):
     s.sendall(b'\xab\x40\x01\x00\xff')
@@ -96,13 +97,44 @@ def hand(s: socket.socket):
         time.sleep(2)
 
 def start_position(s: socket.socket):
-    move_servo(s, ServoKind.HAND, 0)
-    move_servo(s, ServoKind.GRAB, 80)
+    move_servo(s, ServoKind.HAND, 87)
+    move_servo(s, ServoKind.GRAB, 30)
     move_servo(s, ServoKind.SHOULDER, 180)
     move_servo(s, ServoKind.ELBOW, 100)
 
+def trackline(s: socket.socket):
+    ba = bytearray(b'\xab\x13\x02\x00\xff')
+    s.sendall(ba)
+    time.sleep(2)
+
+
+def forward(s: socket.socket):
+    ba = bytearray(b'\xab\x00\x01\x00\xff')
+    s.sendall(ba)
+
+def stop(s: socket.socket):
+    ba = bytearray(b'\xab\x00\x00\x00\xff')
+    s.sendall(ba)
+
+def set_speed(s: socket.socket, value: int):
+    ba1 = bytearray(b'\xab\x02\x01\x00\xff')
+    ba2 = bytearray(b'\xab\x02\x02\x00\xff')
+
+    ba1[3] = value
+    ba2[3] = value
+    s.sendall(ba1)
+    s.sendall(ba2)
+
+def forward_time(s: socket.socket):
+    send_command(s, b'\xab\x00\x05\x04\xff')
+
+def set_color(s: socket.socket, color: Color):
+    for i in range(8):
+        play_color_index(s, color, i)
+
+def color_follow(s: socket.socket):
+    send_command(s, b'\xab\x13\x09\x02\xff')
 
 if __name__ == "__main__":
     s = create_connect()
-    snake(s)
-    turn_off_all(s)
+    start_position(s)
