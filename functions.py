@@ -107,7 +107,6 @@ def trackline(s: socket.socket):
     s.sendall(ba)
     time.sleep(2)
 
-
 def forward(s: socket.socket):
     ba = bytearray(b'\xab\x00\x01\x00\xff')
     s.sendall(ba)
