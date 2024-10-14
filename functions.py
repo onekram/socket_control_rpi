@@ -96,12 +96,6 @@ def hand(s: socket.socket):
         move_servo(s, ServoKind.GRAB, i * 20)
         time.sleep(2)
 
-def start_position(s: socket.socket):
-    move_servo(s, ServoKind.HAND, 87)
-    move_servo(s, ServoKind.GRAB, 30)
-    move_servo(s, ServoKind.SHOULDER, 180)
-    move_servo(s, ServoKind.ELBOW, 100)
-
 def trackline(s: socket.socket):
     ba = bytearray(b'\xab\x13\x02\x00\xff')
     s.sendall(ba)
@@ -133,7 +127,3 @@ def set_color(s: socket.socket, color: Color):
 
 def color_follow(s: socket.socket):
     send_command(s, b'\xab\x13\x09\x02\xff')
-
-if __name__ == "__main__":
-    s = create_connect()
-    start_position(s)
