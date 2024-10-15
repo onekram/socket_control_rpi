@@ -4,9 +4,9 @@ import functions as f
 import camera
 import hand
 import movement as m
+from hand import put_down
 from servokind import ServoKind
 if __name__ == "__main__":
     s = f.create_connect()
-    hand.catch(s)
-    # time.sleep(3)
-    # hand.hold(s)
+
+    hand.start_position(s)
