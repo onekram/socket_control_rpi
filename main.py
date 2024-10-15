@@ -1,6 +1,8 @@
+
 import functions as f
-from servokind import ServoKind
+import camera
 import hand
+from servokind import ServoKind
 if __name__ == "__main__":
     s = f.create_connect()
-    f.move_servo(s, ServoKind.CAM_UD, 70)
+    camera.start_position(s)

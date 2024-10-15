@@ -115,8 +115,8 @@ def set_speed(s: socket.socket, value: int):
 
     ba1[3] = value
     ba2[3] = value
-    s.sendall(ba1)
-    s.sendall(ba2)
+    send_command(s, ba1)
+    send_command(s, ba2)
 
 def forward_time(s: socket.socket):
     send_command(s, b'\xab\x00\x05\x04\xff')
