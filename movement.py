@@ -19,7 +19,7 @@ def spin_left(s: socket.socket):
     ba = bytearray(b'\xab\x00\x03\x00\xFF')
     send_command(s, ba)
 
-def turn_to_left(s: socket.socket):
+def turn_left_90(s: socket.socket):
     spin_left(s)
     time.sleep(1.3)
     stop(s)
@@ -28,7 +28,22 @@ def spin_right(s: socket.socket):
     ba = bytearray(b'\xab\x00\x04\x00\xFF')
     send_command(s, ba)
 
-def turn_to_right(s: socket.socket):
+def forward_time(s: socket.socket, t: float):
+    forward(s)
+    time.sleep(t)
+    stop(s)
+
+def turn_right_90(s: socket.socket):
     spin_right(s)
     time.sleep(1.3)
+    stop(s)
+
+def turn_to_left(s: socket.socket, t: float):
+    spin_left(s)
+    time.sleep(t)
+    stop(s)
+
+def turn_to_right(s: socket.socket, t: float):
+    spin_right(s)
+    time.sleep(t)
     stop(s)
