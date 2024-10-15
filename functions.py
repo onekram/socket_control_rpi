@@ -85,29 +85,10 @@ def play_color_index(s: socket.socket, color: Color, idx: int):
 def turn_off_index(s: socket.socket, idx: int):
     play_color_index(s, Color.NO_COLOR, idx)
 
-def move_servo(s: socket.socket, servo: ServoKind, angle: int):
-    ba = bytearray(b'\xab\x01\x00\x00\xff')
-    ba[2] = servo.value
-    ba[3] = angle
-    send_command(s, ba)
-
-def hand(s: socket.socket):
-    for i in range(1, 5):
-        move_servo(s, ServoKind.GRAB, i * 20)
-        time.sleep(2)
-
 def trackline(s: socket.socket):
     ba = bytearray(b'\xab\x13\x02\x00\xff')
     s.sendall(ba)
     time.sleep(2)
-
-def forward(s: socket.socket):
-    ba = bytearray(b'\xab\x00\x01\x00\xff')
-    s.sendall(ba)
-
-def stop(s: socket.socket):
-    ba = bytearray(b'\xab\x00\x00\x00\xff')
-    s.sendall(ba)
 
 def set_speed(s: socket.socket, value: int):
     ba1 = bytearray(b'\xab\x02\x01\x00\xff')
