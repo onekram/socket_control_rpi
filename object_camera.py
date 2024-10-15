@@ -4,7 +4,14 @@ from movement import *
 
 # минимальный размер контуров пятна
 BLOBSIZE = 100
-
+S_MIN = 29
+S_MAX = 255
+V_MIN = 148
+V_MAX = 255
+# цвет прямоугольника (B, G, R)
+RECTCOLOR = (0, 255, 0)
+# толщина линии прямоугольника
+RTHICK = 2
 
 def check_size(w, h):
     if w * h > BLOBSIZE:
@@ -13,19 +20,6 @@ def check_size(w, h):
         return False
 
 def follow_object(s: socket.socket):
-    S_MIN = 29
-    S_MAX = 255
-    V_MIN = 148
-    V_MAX = 255
-
-
-
-    # цвет прямоугольника (B, G, R)
-    RECTCOLOR = (0, 255, 0)
-
-    # толщина линии прямоугольника
-    RTHICK = 2
-
     cap = cv2.VideoCapture("http://192.168.2.99:8080/?action=stream")  # Открываем видеопоток с камеры
     cap.set(3, 320)  # Устанавливаем ширину изображения в 320 пикселей
     cap.set(4, 320)  # Устанавливаем высоту изображения в 320 пикселей
