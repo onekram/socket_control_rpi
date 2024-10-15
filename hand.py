@@ -15,10 +15,10 @@ def catch(s: socket.socket):
     time.sleep(0.1)
     move_servo(s, ServoKind.HAND, 90)
     move_servo(s, ServoKind.SHOULDER, 85)
-    move_servo(s, ServoKind.ELBOW, 150)
+    move_servo(s, ServoKind.ELBOW, 170)
 
 def hold(s: socket.socket):
-    move_servo(s, ServoKind.GRAB, 65)
+    move_servo(s, ServoKind.GRAB, 70)
     time.sleep(0.5)
     move_servo(s, ServoKind.HAND, 87)
     move_servo(s, ServoKind.SHOULDER, 160)

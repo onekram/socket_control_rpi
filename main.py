@@ -8,5 +8,5 @@ from servokind import ServoKind
 if __name__ == "__main__":
     s = f.create_connect()
     hand.catch(s)
-    time.sleep(3)
-    hand.hold(s)
+    # time.sleep(3)
+    # hand.hold(s)
