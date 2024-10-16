@@ -1,16 +1,16 @@
 import logging
-import time
+import cv2
 
 from ultralytics import YOLO
-import cv2
 from servo.hand import *
 from parse_objects_camera.objectkind import ObjectKind
 import functions as f
 from movement import *
 from servo import functions as sf
-import cv2
+from servo import hand
 
 
+DRAW = True
 
 DELAY_SECONDS = 0.1
 
@@ -18,15 +18,9 @@ logging.disable(logging.FATAL)
 onnx_model = YOLO('better_small.onnx')
 MIN_SIZE = 300
 
-
-# print(onnx_model.names)
 def get_result_yolo(frame, tp: ObjectKind):
     results = onnx_model(frame)
-
     boxes = results[0].boxes
-
-    # максимальная вероятность
-    # отбираем объект по типу, если несколько возвращаем с максимальной вероятностью
     max_confidence = 0
     ind = -1
     for i in range(len(boxes)):
@@ -46,22 +40,24 @@ def hand_manip():
     catch(s)
     time.sleep(1)
     hold(s)
-    time.sleep(5)
-    put_down(s)
+
+def draw_info(frame, x, y, w, h):
+    cv2.putText(frame, f"x={x}, y = {y}, size={w * h}", (x, y),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1, (0, 0, 0), 2)
+    cv2.rectangle(frame, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (255, 255, 255), 2)
 
 def turn_to_catch_position(cap):
     d_x = 100
-    while True:  # Бесконечный цикл
-        ret, frame = cap.read()  # Считываем кадр с камеры
+    while True:
+        ret, frame = cap.read()
         if ret:
             res = get_result_yolo(frame, ObjectKind.CUBE)
             if res is not None:
                 x, y, w, h = res.xywh[0]
                 x, y, w, h = int(x), int(y), int(w), int(h)
-                cv2.putText(frame, f"x={x}, y = {y}, size={w * h}", (x, y),
-                            cv2.FONT_HERSHEY_SIMPLEX,
-                            1, (0, 0, 0), 2)
-                cv2.rectangle(frame, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (255, 255, 255), 2)
+                if DRAW:
+                    draw_info(frame, x, y, w, h)
                 set_speed(s, 30)
                 if x < d_x - 50:
                     turn_to_left_without_stop(s)
@@ -70,13 +66,11 @@ def turn_to_catch_position(cap):
                 else:
                     stop(s)
                     break
-
             else:
                 stop(s)
-            cv2.imshow("Image", frame)
-    return
-
-
+            if DRAW:
+                cv2.imshow("Image", frame)
+                cv2.waitKey(1)
 
 def follow_object_cube():
     d_x = 250
@@ -94,10 +88,8 @@ def follow_object_cube():
         if res is not None:
              x, y, w, h = res.xywh[0]
              x, y, w, h = int(x), int(y), int(w), int(h)
-             cv2.putText(frame, f"x={x}, y = {y}, size={w * h}", (x, y),
-                         cv2.FONT_HERSHEY_SIMPLEX,
-                         1, (0, 0, 0), 2)
-             cv2.rectangle(frame, (x - w//2, y - h //2), (x + w//2, y + h//2), (255, 255, 255), 2)
+             if DRAW:
+                 draw_info(frame, x, y, w, h)
              if x < d_x - border:
                  set_speed(s, 30)
                  turn_to_left_without_stop(s)
@@ -113,12 +105,14 @@ def follow_object_cube():
                      break
         else:
             stop(s)
-        cv2.imshow("Image", frame)
-        cv2.waitKey(1)
+        if DRAW:
+            cv2.imshow("Image", frame)
+            cv2.waitKey(1)
     turn_to_catch_position(cap)
     hand_manip()
     cap.release()
-    cv2.destroyAllWindows()
+    if DRAW:
+        cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
@@ -127,3 +121,5 @@ if __name__ == "__main__":
 
     sf.start(s)
     follow_object_cube()
+    time.sleep(2)
+    hand.put_down(s)
