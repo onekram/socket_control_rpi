@@ -5,7 +5,7 @@ def photo_maker():
     cap = cv2.VideoCapture("http://192.168.2.99:8080/?action=stream")  # Open the video stream from the camera
     cap.set(3, 320)  # Set the width of the image to 320 pixels
     cap.set(4, 320)  # Set the height of the image to 320 pixels
-    i = 78
+    i = 1
 
     while True:  # Infinite loop
         ret, frame = cap.read()  # Read a frame from the camera
