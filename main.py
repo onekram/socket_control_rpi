@@ -7,10 +7,6 @@ import functions as f
 from servo import hand, camera
 
 
-def start(s):
-    camera.start_position(s)
-    hand.start_position(s)
-
 if __name__ == "__main__":
     s = f.create_connect()
     camera.start_position(s)
