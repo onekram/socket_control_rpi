@@ -42,6 +42,33 @@ def get_result_yolo(frame, tp: ObjectKind):
     return boxes[ind]
 
 
+def turn_to_catch_position(cap):
+    print("Here")
+    d_x = 100
+    while True:  # Бесконечный цикл
+        ret, frame = cap.read()  # Считываем кадр с камеры
+        if ret:
+            res = get_result_yolo(frame, ObjectKind.CUBE)
+            if res is not None:
+                x, y, w, h = res.xywh[0]
+                x, y, w, h = int(x), int(y), int(w), int(h)
+                cv2.putText(frame, f"x={x}, y = {y}, size={w * h}", (x, y),
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            1, (0, 0, 0), 2)
+                cv2.rectangle(frame, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (255, 255, 255), 2)
+                set_speed(s, 30)
+                if x < d_x - 50:
+                    turn_to_left_without_stop(s)
+                elif x > d_x + 50:
+                    turn_to_right_without_stop(s)
+                else:
+                    break
+
+            else:
+                stop(s)
+            cv2.imshow("Image", frame)
+    return
+
 
 
 def follow_object_cube():
@@ -63,21 +90,23 @@ def follow_object_cube():
                              1, (0, 0, 0), 2)
                  cv2.rectangle(frame, (x - w//2, y - h //2), (x + w//2, y + h//2), (255, 255, 255), 2)
                  if x < d_x - 100:
+                     set_speed(s, 30)
                      turn_to_left_without_stop(s)
                  elif x > d_x + 100:
+                     set_speed(s, 30)
                      turn_to_right_without_stop(s)
                  else:
                      if w * h < obj_size:
+                         set_speed(s, 40)
                          forward_time_without_stop(s)
                      else:
                          stop(s)
+                         break
 
             else:
                 stop(s)
             cv2.imshow("Image", frame)
-            k = cv2.waitKey(1)
-            if k == 27:
-                break
+    turn_to_catch_position(cap)
     cap.release()
     cv2.destroyAllWindows()
 
