@@ -1,5 +1,4 @@
 import logging
-
 from ultralytics import YOLO
 import cv2
 from parse_objects_camera.objectkind import ObjectKind
