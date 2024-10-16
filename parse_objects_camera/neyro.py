@@ -1,10 +1,13 @@
 import logging
+import time
+
 from ultralytics import YOLO
 import cv2
+from servo.hand import *
 from parse_objects_camera.objectkind import ObjectKind
 import functions as f
 from movement import *
-import os
+from main import start
 import cv2
 
 
@@ -61,11 +64,12 @@ def turn_to_catch_position(cap):
                 elif x > d_x + 50:
                     turn_to_right_without_stop(s)
                 else:
+                    stop(s)
                     break
 
             else:
                 stop(s)
-            cv2.imshow("Image", frame)
+            #cv2.imshow("Image", frame)
     return
 
 
@@ -104,13 +108,24 @@ def follow_object_cube():
 
             else:
                 stop(s)
-            cv2.imshow("Image", frame)
+            # cv2.imshow("Image", frame)
     turn_to_catch_position(cap)
+
+    prepare(s)
+    time.sleep(1)
+    forward_time(s, 1.5)
+    time.sleep(1)
+    catch(s)
+    time.sleep(1)
+    hold(s)
+    time.sleep(5)
+    put_down(s)
     cap.release()
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
     s = f.create_connect()
+    start(s)
     set_speed(s, 40)
     follow_object_cube()
