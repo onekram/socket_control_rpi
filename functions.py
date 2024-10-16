@@ -9,9 +9,9 @@ port = 2001
 def send_command(s, command1):
     try:
         s.sendall(command1)
-        print("Команда отправлена")
+        # print("Команда отправлена")
     except socket.error as e:
-        print(f"Ошибка сокета: {e}")
+        # print(f"Ошибка сокета: {e}")
         s.close()
         raise e
 
@@ -89,15 +89,6 @@ def trackline(s: socket.socket):
     ba = bytearray(b'\xab\x13\x02\x00\xff')
     s.sendall(ba)
     time.sleep(2)
-
-def set_speed(s: socket.socket, value: int):
-    ba1 = bytearray(b'\xab\x02\x01\x00\xff')
-    ba2 = bytearray(b'\xab\x02\x02\x00\xff')
-
-    ba1[3] = value
-    ba2[3] = value
-    send_command(s, ba1)
-    send_command(s, ba2)
 
 def forward_time(s: socket.socket):
     send_command(s, b'\xab\x00\x05\x04\xff')

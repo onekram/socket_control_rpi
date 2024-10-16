@@ -8,3 +8,4 @@ class ObjectKind(Enum):
     GREEN_BUTTON = 4
     RED_BASKET = 5
     ROBOT = 6
+
