@@ -1,13 +1,15 @@
 import time
-from color import Color
+
 import functions as f
-import camera
-import hand
-import movement as m
-from hand import put_down
-from servokind import ServoKind
-from object_camera import follow_object
+from servo import hand, camera
 
 if __name__ == "__main__":
     s = f.create_connect()
-    follow_object(s)
+    # follow_object(s)
+    camera.start_position(s)
+    hand.start_position(s)
+    # time.sleep(2)
+    # hand.catch(s)
+    # time.sleep(2)
+    # hand.hold(s)
+    # camera.start_position(s)

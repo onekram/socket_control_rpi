@@ -2,7 +2,7 @@ import socket
 import time
 
 from servokind import ServoKind
-from servo_movement import move_servo
+from servo.servo_movement import move_servo
 
 def start_position(s: socket.socket):
     move_servo(s, ServoKind.HAND, 20)

@@ -1,7 +1,7 @@
 import socket
 from servokind import ServoKind
 from functions import send_command
-from servo_movement import move_servo
+from servo.servo_movement import move_servo
 
 
 def start_position(s: socket.socket):

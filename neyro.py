@@ -1,5 +1,6 @@
 from ultralytics import YOLO
 import cv2
+import numpy as np
 from objectkind import ObjectKind
 import functions as f
 from movement import *
@@ -57,28 +58,22 @@ def follow_object_neyro(type_object: ObjectKind):
     cap.set(4, 320)  # Устанавливаем высоту изображения в 320 пикселей
     while True:  # Бесконечный цикл
         ret, frame = cap.read()  # Считываем кадр с камеры
-        if ret == 1:
-            res = get_result_yolo(frame, type_object)
-            if res is not None:
-                 x, y, w, h = res.xywh[0]
-                 x, y, w, h = int(x), int(y), int(w), int(h)
-                 #cv2.putText(frame, f"x={center_x}, y = {center_y}, size={w * h}", (center_x, center_y),
-                 #            cv2.FONT_HERSHEY_SIMPLEX,
-                 #            1, (255, 255, 255), 2)
-                 cv2.rectangle(frame, (x - w//2, y - h //2), (x + w//2, y + h//2), (255, 255, 255), 2)
-                 if x < d_x - 30:
-                     turn_to_left(s, time_sleep)
-                 elif y > d_x + 30:
-                     turn_to_right(s, time_sleep)
-                 else:
-                     if w * h < cub_size:
-                         forward_time(s, time_sleep)
-                     else:
-                         pass
-            cv2.imshow("Image", frame)
-        k = cv2.waitKey(1)
-        if k == 27:
-            break
+        res = get_result_yolo(frame, type_object)
+        cv2.imshow("Image", frame)
+        if res is not None:
+
+            x, y, w, h = res.xywh[0]
+            center_x = (x + w) // 2
+            if center_x < d_x - 30:
+                turn_to_left(s, time_sleep)
+            elif center_x > d_x + 30:
+                turn_to_right(s, time_sleep)
+            else:
+                if w * h < cub_size:
+                    forward_time(s, time_sleep)
+                else:
+                    pass
+
     cap.release()
     cv2.destroyAllWindows()
 
