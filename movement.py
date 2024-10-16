@@ -59,12 +59,9 @@ def turn_to_right(s: socket.socket, t: float):
 
 def forward_time_without_stop(s: socket.socket, t: float):
     forward(s)
-    time.sleep(t)
 
 def turn_to_left_without_stop(s: socket.socket, t: float):
     spin_left(s)
-    time.sleep(t)
 
 def turn_to_right_without_stop(s: socket.socket, t: float):
     spin_right(s)
-    time.sleep(t)

@@ -13,6 +13,7 @@ import cv2
 
 logging.disable(logging.FATAL)
 onnx_model = YOLO('better_small.onnx')
+MIN_SIZE = 300
 
 
 # print(onnx_model.names)
@@ -30,7 +31,8 @@ def get_result_yolo(frame, tp: ObjectKind):
     max_confidence = 0
     ind = -1
     for i in range(len(boxes)):
-        if boxes.cls[i] == tp.value:
+
+        if boxes.cls[i] == tp.value and int(boxes.xywh[i][3]) * int(boxes.xywh[i][2]) >= MIN_SIZE:
             if boxes.conf[i] > max_confidence:
                 max_confidence = boxes.conf[i]
                 ind = i
@@ -40,32 +42,21 @@ def get_result_yolo(frame, tp: ObjectKind):
     return boxes[ind]
 
 
-# минимальный размер контуров пятна
-BLOBSIZE = 100
 
 
-def check_size(w, h):
-    if w * h > BLOBSIZE:
-        return True
-    else:
-        return False
-
-
-def follow_object_neyro(type_object: ObjectKind):
+def follow_object_cube():
     # type_objects={0: 'ball', 1: 'blue_button', 2: 'cube', 3: 'green_basket', 4: 'green_button', 5: 'red_basket', 6: 'robot'}
     d_x = 250
-    time_sleep = 0.1
-    time_sleep_turn = 0.1
-    obj_size=  0
-    if type_object.value == 2:
-        obj_size = 14000
+    time_sleep = 0.05
+    time_sleep_turn = 0.05
+    obj_size = 14000
     cap = cv2.VideoCapture("http://192.168.2.99:8080/?action=stream")  # Открываем видеопоток с камеры
     cap.set(3, 320)  # Устанавливаем ширину изображения в 320 пикселей
     cap.set(4, 320)  # Устанавливаем высоту изображения в 320 пикселей
     while True:  # Бесконечный цикл
         ret, frame = cap.read()  # Считываем кадр с камеры
         if ret:
-            res = get_result_yolo(frame, type_object)
+            res = get_result_yolo(frame, ObjectKind.CUBE)
             if res is not None:
                  x, y, w, h = res.xywh[0]
                  x, y, w, h = int(x), int(y), int(w), int(h)
@@ -85,7 +76,7 @@ def follow_object_neyro(type_object: ObjectKind):
 
             else:
                 stop(s)
-            # cv2.imshow("Image", frame)
+            cv2.imshow("Image", frame)
             k = cv2.waitKey(1)
             if k == 27:
                 break
@@ -95,5 +86,5 @@ def follow_object_neyro(type_object: ObjectKind):
 
 if __name__ == "__main__":
     s = f.create_connect()
-    set_speed(s, 30)
-    follow_object_neyro(ObjectKind.CUBE)
+    set_speed(s, 40)
+    follow_object_cube()
