@@ -5,10 +5,10 @@ from servokind import ServoKind
 from servo_movement import move_servo
 
 def start_position(s: socket.socket):
-    move_servo(s, ServoKind.HAND, 95)
+    move_servo(s, ServoKind.HAND, 20)
     move_servo(s, ServoKind.GRAB, 70)
     move_servo(s, ServoKind.SHOULDER, 170)
-    move_servo(s, ServoKind.ELBOW, 100)
+    move_servo(s, ServoKind.ELBOW, 170)
 
 def catch(s: socket.socket): # приготовится к захвату
     move_servo(s, ServoKind.GRAB, 20)
