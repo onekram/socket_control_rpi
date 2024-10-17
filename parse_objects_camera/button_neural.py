@@ -14,6 +14,8 @@ from servo import add_functions as sf
 DRAW = True
 
 DELAY_SECONDS = 0.1
+SPEED_FORWARD = 45
+SPEED_TURN = 30
 
 def hand_fall(s):
     fall(s)
@@ -44,7 +46,7 @@ def turn_to_fall_hand_position(onnx_model, cap, s, type_button):
                 x, y, w, h = int(x), int(y), int(w), int(h)
                 if DRAW:
                     draw_info(frame, x, y, w, h)
-                set_speed(s, 30)
+                set_speed(s, SPEED_TURN)
                 if x < d_x - 50:
                     turn_to_left_without_stop(s)
                 elif x > d_x + 50:
@@ -62,7 +64,7 @@ def follow_object_button(onnx_model, s, type_button):
     d_x = 250
     obj_size = 34000
     cap = cv2.VideoCapture("http://192.168.2.99:8080/?action=stream")  # Открываем видеопоток с камеры
-    cap.set(3, 320)  # Устанавливаем ширину изображения в 320 пикселей
+    cap.set(3, 480)  # Устанавливаем ширину изображения в 320 пикселей
     cap.set(4, 320)  # Устанавливаем высоту изображения в 320 пикселей
     border = 100
     while True:  # Бесконечный цикл
@@ -77,14 +79,14 @@ def follow_object_button(onnx_model, s, type_button):
              if DRAW:
                  draw_info(frame, x, y, w, h)
              if x < d_x - border:
-                 set_speed(s, 30)
+                 set_speed(s, SPEED_TURN)
                  turn_to_left_without_stop(s)
              elif x > d_x + border:
-                 set_speed(s, 30)
+                 set_speed(s,  SPEED_TURN)
                  turn_to_right_without_stop(s)
              else:
                  if w * h < obj_size:
-                     set_speed(s, 40)
+                     set_speed(s, SPEED_FORWARD)
                      forward_time_without_stop(s)
                  else:
                      stop(s)
@@ -105,7 +107,6 @@ if __name__ == "__main__":
     logging.disable(logging.FATAL)
     onnx_model = YOLO('better_small.onnx')
     s = f.create_connect()
-    set_speed(s, 30)
 
     sf.start(s)
-    follow_object_button(onnx_model, s, ObjectKind.GREEN_BUTTON)
+    follow_object_button(onnx_model, s, ObjectKind.BLUE_BUTTON)

@@ -14,6 +14,8 @@ from cube_neural import follow_object_cube
 DRAW = True
 
 DELAY_SECONDS = 0.1
+SPEED_FORWARD = 45
+SPEED_TURN = 30
 
 
 def draw_info(frame, x, y, w, h):
@@ -33,7 +35,7 @@ def turn_to_put_hand_position(onnx_model, cap, s, type_basket):
                 x, y, w, h = int(x), int(y), int(w), int(h)
                 if DRAW:
                     draw_info(frame, x, y, w, h)
-                set_speed(s, 30)
+                set_speed(s, SPEED_TURN)
                 if x < d_x - 50:
                     turn_to_left_without_stop(s)
                 elif x > d_x + 50:
@@ -50,7 +52,7 @@ def turn_to_put_hand_position(onnx_model, cap, s, type_basket):
 
 def follow_object_basket(onnx_model, type_basket):
     d_x = 250
-    obj_size = 150000
+    obj_size = 100000
     cap = cv2.VideoCapture("http://192.168.2.99:8080/?action=stream")  # Открываем видеопоток с камеры
     cap.set(3, 320)  # Устанавливаем ширину изображения в 320 пикселей
     cap.set(4, 320)  # Устанавливаем высоту изображения в 320 пикселей
@@ -67,14 +69,14 @@ def follow_object_basket(onnx_model, type_basket):
              if DRAW:
                  draw_info(frame, x, y, w, h)
              if x < d_x - border:
-                 set_speed(s, 30)
+                 set_speed(s, SPEED_TURN)
                  turn_to_left_without_stop(s)
              elif x > d_x + border:
-                 set_speed(s, 30)
+                 set_speed(s, SPEED_TURN)
                  turn_to_right_without_stop(s)
              else:
-                 if y < 290 + 40 * (w * h < obj_size):
-                     set_speed(s, 40)
+                 if y < 280 + 40 * (w * h < obj_size):
+                     set_speed(s, SPEED_FORWARD)
                      forward_time_without_stop(s)
                  else:
                      stop(s)
@@ -96,7 +98,6 @@ if __name__ == "__main__":
     logging.disable(logging.FATAL)
     first_onnx_model = YOLO('better_small.onnx')
     s = f.create_connect()
-    set_speed(s, 30)
 
     sf.start(s)
     follow_object_cube(first_onnx_model, s)

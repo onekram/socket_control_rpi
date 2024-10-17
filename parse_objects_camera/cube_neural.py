@@ -13,10 +13,13 @@ from servo import hand
 DRAW = True
 
 DELAY_SECONDS = 0.1
+SPEED_FORWARD = 45
+SPEED_TURN = 30
 
 def hand_manip(s):
     prepare(s)
     time.sleep(1)
+    set_speed(s, SPEED_FORWARD)
     forward_time(s, 1.5)
     time.sleep(1)
     catch(s)
@@ -40,7 +43,7 @@ def turn_to_catch_position(onnx_model, cap, s):
                 x, y, w, h = int(x), int(y), int(w), int(h)
                 if DRAW:
                     draw_info(frame, x, y, w, h)
-                set_speed(s, 30)
+                set_speed(s, SPEED_TURN)
                 if x < d_x - 50:
                     turn_to_left_without_stop(s)
                 elif x > d_x + 50:
@@ -73,14 +76,14 @@ def follow_object_cube(onnx_model, s):
              if DRAW:
                  draw_info(frame, x, y, w, h)
              if x < d_x - border:
-                 set_speed(s, 30)
+                 set_speed(s, SPEED_TURN)
                  turn_to_left_without_stop(s)
              elif x > d_x + border:
-                 set_speed(s, 30)
+                 set_speed(s, SPEED_TURN)
                  turn_to_right_without_stop(s)
              else:
                  if w * h < obj_size:
-                     set_speed(s, 40)
+                     set_speed(s, SPEED_FORWARD)
                      forward_time_without_stop(s)
                  else:
                      stop(s)
@@ -101,7 +104,6 @@ if __name__ == "__main__":
     logging.disable(logging.FATAL)
     onnx_model = YOLO('better_small.onnx')
     s = f.create_connect()
-    set_speed(s, 30)
 
     sf.start(s)
     follow_object_cube(onnx_model, s)
