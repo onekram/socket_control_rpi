@@ -40,3 +40,8 @@ def put_down(s: socket.socket): # отпустить объект
     move_servo(s, ServoKind.SHOULDER, 175)
     move_servo(s, ServoKind.ELBOW, 115)
 
+def fall(s: socket.socket):
+    #move_servo(s, ServoKind.GRAB, 20)
+    #move_servo(s, ServoKind.HAND, 95)
+    move_servo(s, ServoKind.SHOULDER, 80)
+    move_servo(s, ServoKind.ELBOW, 170)
