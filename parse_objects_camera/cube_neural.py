@@ -1,6 +1,6 @@
 import logging
 import cv2
-
+from parse_objects_camera.get_res_neural import get_result_yolo
 from ultralytics import YOLO
 from servo.hand import *
 from parse_objects_camera.objectkind import ObjectKind
@@ -13,24 +13,6 @@ from servo import hand
 DRAW = True
 
 DELAY_SECONDS = 0.1
-
-logging.disable(logging.FATAL)
-onnx_model = YOLO('better_small.onnx')
-MIN_SIZE = 300
-
-def get_result_yolo(frame, tp: ObjectKind):
-    results = onnx_model(frame)
-    boxes = results[0].boxes
-    max_confidence = 0
-    ind = -1
-    for i in range(len(boxes)):
-        if boxes.cls[i] == tp.value and int(boxes.xywh[i][3]) * int(boxes.xywh[i][2]) >= MIN_SIZE:
-            if boxes.conf[i] > max_confidence:
-                max_confidence = boxes.conf[i]
-                ind = i
-    if ind == -1:
-        return None
-    return boxes[ind]
 
 def hand_manip():
     prepare(s)
@@ -52,7 +34,7 @@ def turn_to_catch_position(cap):
     while True:
         ret, frame = cap.read()
         if ret:
-            res = get_result_yolo(frame, ObjectKind.CUBE)
+            res = get_result_yolo(onnx_model, frame, ObjectKind.CUBE)
             if res is not None:
                 x, y, w, h = res.xywh[0]
                 x, y, w, h = int(x), int(y), int(w), int(h)
@@ -84,7 +66,7 @@ def follow_object_cube():
         if not ret:
             print("Error: Could not read frame.")
             break
-        res = get_result_yolo(frame, ObjectKind.CUBE)
+        res = get_result_yolo(onnx_model, frame, ObjectKind.CUBE)
         if res is not None:
              x, y, w, h = res.xywh[0]
              x, y, w, h = int(x), int(y), int(w), int(h)
@@ -116,6 +98,8 @@ def follow_object_cube():
 
 
 if __name__ == "__main__":
+    logging.disable(logging.FATAL)
+    onnx_model = YOLO('better_small.onnx')
     s = f.create_connect()
     set_speed(s, 30)
 
