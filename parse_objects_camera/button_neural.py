@@ -15,7 +15,7 @@ DRAW = True
 
 DELAY_SECONDS = 0.1
 
-def hand_fall(cap, type_button):
+def hand_fall(s):
     fall(s)
     time.sleep(2)
     sf.start(s)
@@ -33,7 +33,7 @@ def draw_info(frame, x, y, w, h):
     cv2.rectangle(frame, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (139, 0, 255), 2)
 
 
-def turn_to_put_hand_position(cap, type_button):
+def turn_to_fall_hand_position(onnx_model, cap, s, type_button):
     d_x = 100
     while True:
         ret, frame = cap.read()
@@ -58,7 +58,7 @@ def turn_to_put_hand_position(cap, type_button):
                 cv2.imshow("Button_tracking", frame)
                 cv2.waitKey(1)
 
-def follow_object_button(type_button):
+def follow_object_button(onnx_model, s, type_button):
     d_x = 250
     obj_size = 34000
     cap = cv2.VideoCapture("http://192.168.2.99:8080/?action=stream")  # Открываем видеопоток с камеры
@@ -94,8 +94,8 @@ def follow_object_button(type_button):
         if DRAW:
             cv2.imshow("Button_tracking", frame)
             cv2.waitKey(1)
-    turn_to_put_hand_position(cap, type_button)
-    hand_fall(cap, type_button)
+    turn_to_fall_hand_position(onnx_model, cap, s, type_button)
+    hand_fall(s)
     cap.release()
     if DRAW:
         cv2.destroyAllWindows()
@@ -108,4 +108,4 @@ if __name__ == "__main__":
     set_speed(s, 30)
 
     sf.start(s)
-    follow_object_button(ObjectKind.GREEN_BUTTON)
+    follow_object_button(onnx_model, s, ObjectKind.GREEN_BUTTON)

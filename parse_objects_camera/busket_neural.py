@@ -1,40 +1,33 @@
 import logging
+import time
+
 import cv2
 from parse_objects_camera.get_res_neural import get_result_yolo
 from ultralytics import YOLO
-from servo.hand import *
+from servo.hand import fall, put_down
 from parse_objects_camera.objectkind import ObjectKind
 import functions as f
 from movement import *
 from servo import add_functions as sf
-from servo import hand
-
+from cube_neural import follow_object_cube
 
 DRAW = True
 
 DELAY_SECONDS = 0.1
 
-def hand_manip(s):
-    prepare(s)
-    time.sleep(1)
-    forward_time(s, 1.5)
-    time.sleep(1)
-    catch(s)
-    time.sleep(1)
-    hold(s)
 
 def draw_info(frame, x, y, w, h):
-    cv2.putText(frame, f"x={x}, y = {y}, size={w * h}", (x, y),
+    cv2.putText(frame, f"x={x}, y = {y}, size={w * h}", (x - w // 2, y - h // 2),
                 cv2.FONT_HERSHEY_SIMPLEX,
-                1, (0, 0, 0), 2)
-    cv2.rectangle(frame, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (255, 255, 255), 2)
+                1, (139, 0, 255), 2)
+    cv2.rectangle(frame, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (139, 0, 255), 2)
 
-def turn_to_catch_position(onnx_model, cap, s):
-    d_x = 100
+def turn_to_put_hand_position(onnx_model, cap, s, type_basket):
+    d_x = 130
     while True:
         ret, frame = cap.read()
         if ret:
-            res = get_result_yolo(onnx_model, frame, ObjectKind.CUBE)
+            res = get_result_yolo(onnx_model, frame, type_basket)
             if res is not None:
                 x, y, w, h = res.xywh[0]
                 x, y, w, h = int(x), int(y), int(w), int(h)
@@ -54,9 +47,10 @@ def turn_to_catch_position(onnx_model, cap, s):
                 cv2.imshow("Image", frame)
                 cv2.waitKey(1)
 
-def follow_object_cube(onnx_model, s):
+
+def follow_object_basket(onnx_model, type_basket):
     d_x = 250
-    obj_size = 15000
+    obj_size = 150000
     cap = cv2.VideoCapture("http://192.168.2.99:8080/?action=stream")  # Открываем видеопоток с камеры
     cap.set(3, 320)  # Устанавливаем ширину изображения в 320 пикселей
     cap.set(4, 320)  # Устанавливаем высоту изображения в 320 пикселей
@@ -66,7 +60,7 @@ def follow_object_cube(onnx_model, s):
         if not ret:
             print("Error: Could not read frame.")
             break
-        res = get_result_yolo(onnx_model, frame, ObjectKind.CUBE)
+        res = get_result_yolo(onnx_model, frame, type_basket)
         if res is not None:
              x, y, w, h = res.xywh[0]
              x, y, w, h = int(x), int(y), int(w), int(h)
@@ -79,19 +73,20 @@ def follow_object_cube(onnx_model, s):
                  set_speed(s, 30)
                  turn_to_right_without_stop(s)
              else:
-                 if w * h < obj_size:
+                 if y < 290 + 40 * (w * h < obj_size):
                      set_speed(s, 40)
                      forward_time_without_stop(s)
                  else:
                      stop(s)
                      break
+
         else:
             stop(s)
         if DRAW:
             cv2.imshow("Image", frame)
             cv2.waitKey(1)
-    turn_to_catch_position(onnx_model, cap, s)
-    hand_manip(s)
+    turn_to_put_hand_position(onnx_model, cap, s, type_basket)
+    put_down(s)
     cap.release()
     if DRAW:
         cv2.destroyAllWindows()
@@ -99,11 +94,10 @@ def follow_object_cube(onnx_model, s):
 
 if __name__ == "__main__":
     logging.disable(logging.FATAL)
-    onnx_model = YOLO('better_small.onnx')
+    first_onnx_model = YOLO('better_small.onnx')
     s = f.create_connect()
     set_speed(s, 30)
 
     sf.start(s)
-    follow_object_cube(onnx_model, s)
-    time.sleep(2)
-    hand.put_down(s)
+    follow_object_cube(first_onnx_model, s)
+    follow_object_basket(first_onnx_model, ObjectKind.RED_BASKET)
