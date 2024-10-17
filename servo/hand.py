@@ -45,3 +45,18 @@ def fall(s: socket.socket):
     #move_servo(s, ServoKind.HAND, 95)
     move_servo(s, ServoKind.SHOULDER, 80)
     move_servo(s, ServoKind.ELBOW, 170)
+
+
+
+def catch_ball(s: socket.socket):
+    move_servo(s, ServoKind.GRAB, 100)
+    time.sleep(0.3)
+    move_servo(s, ServoKind.HAND, 95)
+    move_servo(s, ServoKind.SHOULDER, 80)
+    move_servo(s, ServoKind.ELBOW, 180)
+
+def start_position_before_follow_ball(s: socket.socket):
+    move_servo(s, ServoKind.HAND, 10)
+    move_servo(s, ServoKind.GRAB, 70)
+    move_servo(s, ServoKind.SHOULDER, 170)
+    move_servo(s, ServoKind.ELBOW, 120)
