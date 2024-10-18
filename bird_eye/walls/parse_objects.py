@@ -1,5 +1,19 @@
 from .graph import Graph
 
+def detect_in_area(pos, area_cords):
+    x, y = pos
+    lu, ru, ld, rd = area_cords
+    return lu[0] <= x <= ru[0] and lu[1] <= y <= ld[1]
+
+def robot_position(pos, wall1, wall2, wall3):
+    if detect_in_area(pos, get_corners(wall3)):
+        return 3
+    if detect_in_area(pos, get_corners(wall2)):
+        return 2
+    if detect_in_area(pos, get_corners(wall1)):
+        return 1
+    return -1
+
 def get_corners(obj):
     x, y, w, h = obj.xywh[0]
     x, y, w, h = int(x), int(y), int(w), int(h)
