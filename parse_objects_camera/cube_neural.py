@@ -20,7 +20,7 @@ def hand_manip(s):
     prepare(s)
     time.sleep(1)
     set_speed(s, SPEED_FORWARD)
-    forward_time(s, 1.5)
+    forward_time(s, 1.3)
     time.sleep(1)
     catch(s)
     time.sleep(1)
@@ -58,7 +58,7 @@ def turn_to_catch_position(onnx_model, cap, s):
                 cv2.waitKey(1)
 
 def follow_object_cube(onnx_model, s):
-    d_x = 250
+    d_x = 230
     obj_size = 15000
     cap = cv2.VideoCapture("http://192.168.2.99:8080/?action=stream")  # Открываем видеопоток с камеры
     cap.set(3, 320)  # Устанавливаем ширину изображения в 320 пикселей
@@ -102,7 +102,7 @@ def follow_object_cube(onnx_model, s):
 
 if __name__ == "__main__":
     logging.disable(logging.FATAL)
-    onnx_model = YOLO('better_small.onnx')
+    onnx_model = YOLO('web_cam_model_v2.onnx')
     s = f.create_connect()
 
     sf.start(s)

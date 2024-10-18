@@ -3,7 +3,7 @@ from parse_objects_camera.objectkind import ObjectKind
 MIN_SIZE = 300
 
 # функция обращения к нейросети и возвращение объекта по типу
-def get_result_yolo(onnx_model, frame, tp: ObjectKind, ):
+def get_result_yolo(onnx_model, frame, tp: ObjectKind):
     results = onnx_model(frame)
     boxes = results[0].boxes
     max_confidence = 0

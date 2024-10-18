@@ -2,6 +2,8 @@ import logging
 import time
 
 import cv2
+
+from parse_objects_camera.ball_neural import follow_object_ball
 from parse_objects_camera.get_res_neural import get_result_yolo
 from ultralytics import YOLO
 from servo.hand import fall, put_down
@@ -75,7 +77,10 @@ def follow_object_basket(onnx_model, type_basket):
                  set_speed(s, SPEED_TURN)
                  turn_to_right_without_stop(s)
              else:
-                 if y < 280 + 40 * (w * h < obj_size):
+                 # старая версия
+                 # 260 + 40 * (w * h < obj_size)
+                 # новая версия
+                 if y < 220:
                      set_speed(s, SPEED_FORWARD)
                      forward_time_without_stop(s)
                  else:
@@ -96,9 +101,9 @@ def follow_object_basket(onnx_model, type_basket):
 
 if __name__ == "__main__":
     logging.disable(logging.FATAL)
-    first_onnx_model = YOLO('better_small.onnx')
+    first_onnx_model = YOLO('web_cam_model_v2.onnx')
     s = f.create_connect()
 
     sf.start(s)
-    follow_object_cube(first_onnx_model, s)
+    follow_object_ball(first_onnx_model, s)
     follow_object_basket(first_onnx_model, ObjectKind.RED_BASKET)

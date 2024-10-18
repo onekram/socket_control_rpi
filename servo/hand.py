@@ -49,7 +49,7 @@ def fall(s: socket.socket):
 
 
 def catch_ball(s: socket.socket):
-    move_servo(s, ServoKind.GRAB, 100)
+    move_servo(s, ServoKind.GRAB, 70)
     time.sleep(0.3)
     move_servo(s, ServoKind.HAND, 95)
     move_servo(s, ServoKind.SHOULDER, 80)

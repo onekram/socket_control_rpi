@@ -7,19 +7,10 @@ import functions as f
 from functions import set_color, turn_off_all
 from photos_maker import photo_maker
 from servo import hand, camera
-
+from servo.hand import put_down
 
 if __name__ == "__main__":
     s = f.create_connect()
-    turn_off_all(s)
-    #camera.start_position(s)
-    #hand.prepare(s)
-    #photo_maker()
-    #time.sleep(1)
-    #hand.prepare(s)
-    #time.sleep(1)
-    #hand.catch(s)
-    #time.sleep(1)
-    #hand.hold(s)
-    #time.sleep(1)
-    #hand.put_down(s)
+
+    #{0: 'ball', 1: 'basket', 2: 'blue_button', 3: 'cube', 4: 'green_button', 5: 'robot'}
+

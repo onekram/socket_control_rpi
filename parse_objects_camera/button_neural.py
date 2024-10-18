@@ -105,7 +105,7 @@ def follow_object_button(onnx_model, s, type_button):
 
 if __name__ == "__main__":
     logging.disable(logging.FATAL)
-    onnx_model = YOLO('better_small.onnx')
+    onnx_model = YOLO('web_cam_model_v2.onnx')
     s = f.create_connect()
 
     sf.start(s)

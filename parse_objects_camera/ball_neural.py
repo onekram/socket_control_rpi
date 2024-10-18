@@ -22,7 +22,7 @@ def hand_manip(s):
     prepare(s)
     time.sleep(1)
     #set_speed(s, SPEED_FORWARD)
-    #forward_time(s, 0.5)
+    forward_time(s, 0.5)
     time.sleep(1)
     catch_ball(s)
     time.sleep(1)
@@ -105,7 +105,7 @@ def follow_object_ball(onnx_model, s):
 
 if __name__ == "__main__":
     logging.disable(logging.FATAL)
-    onnx_model = YOLO('better_small.onnx')
+    onnx_model = YOLO('web_cam_model_v2.onnx')
     s = f.create_connect()
     sf.start(s)
 
