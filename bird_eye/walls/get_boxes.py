@@ -1,13 +1,11 @@
 import cv2
 import numpy as np
-from torch.cuda import graph
 from ultralytics import YOLO
 import logging
 
-from parse_objects import *
 
 logging.disable(logging.FATAL)
-onnx_model = YOLO('walls.onnx')
+onnx_model = YOLO('walls/walls.onnx')
 
 def get_result_yolo(frame):
     results = onnx_model(frame)
@@ -75,7 +73,7 @@ def get_from_cap(cap):
         print("Error: Could not read frame.")
         return
 
-    # frame = cv2.undistort(frame, camera_matrix, dist_coeffs, None, new_camera_matrix)
+    frame = cv2.undistort(frame, camera_matrix, dist_coeffs, None, new_camera_matrix)
 
     x, y, w, h = roi
     frame = frame[y:y+h, x:x+w]
@@ -100,15 +98,3 @@ def record_rtsp_stream(rtsp_url):
             return objs, frame
 
     raise RuntimeError("Bad frame bird eye")
-
-
-if __name__ == "__main__":
-    # url = "rtsp://Admin:rtf123@192.168.2.250:554/1/1"
-    url = "output.mp4"
-    objs, frame = record_rtsp_stream(url)
-    graph = parse_graph(objs)
-    draw_graph(frame, graph)
-    cv2.imshow('Corrected Frame', frame)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
