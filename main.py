@@ -1,16 +1,22 @@
+import logging
 import time
 
+import cv2
 
-from color import Color
-
+from parse_objects_camera.ball_neural import follow_object_ball
+from parse_objects_camera.get_res_neural import get_result_yolo
+from ultralytics import YOLO
+from servo.hand import fall, put_down
+from parse_objects_camera.objectkind import ObjectKind
 import functions as f
-from functions import set_color, turn_off_all
-from photos_maker import photo_maker
-from servo import hand, camera
-from servo.hand import put_down
+from movement import *
+from servo import add_functions as sf
 
 if __name__ == "__main__":
     s = f.create_connect()
-
+    set_speed(s, 70)
+    sf.start(s)
+    forward_dist(s, 100)
+    #turn_left_corner(s, 90)
     #{0: 'ball', 1: 'basket', 2: 'blue_button', 3: 'cube', 4: 'green_button', 5: 'robot'}
 
