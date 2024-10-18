@@ -89,8 +89,7 @@ def get_from_cap(cap):
     return boxes, frame
 
 
-def record_rtsp_stream(rtsp_url):
-    cap = cv2.VideoCapture(rtsp_url)
+def record_rtsp_stream(cap):
     for i in range(3):
         objs, frame = get_from_cap(cap)
         if objs is not None:

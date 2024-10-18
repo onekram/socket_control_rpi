@@ -27,15 +27,12 @@ def get_middle_from_corners(corners1, corners2):
     return [a, b, c, d, e, f, g, h]
 
 
-def parse_graph(objs):
+def parse_graph(objs) -> Graph:
     wall1 = objs["wall1"]
     wall2 = objs["wall2"]
     wall3 = objs["wall3"]
-
     outer = get_middle_from_corners(get_corners(wall1), get_corners(wall2))
     inner = get_middle_from_corners(get_corners(wall3), get_corners(wall2))
-
-
     matrix = [
         [1, 7],
         [0, 2],
