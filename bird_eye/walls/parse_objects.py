@@ -1,7 +1,4 @@
-class Graph:
-    def __init__(self, vertexes, matrix):
-        self.vertexes = vertexes
-        self.matrix = matrix
+from .graph import Graph
 
 def get_corners(obj):
     x, y, w, h = obj.xywh[0]
@@ -28,16 +25,12 @@ def get_middle_from_corners(corners1, corners2):
 
     return [a, b, c, d, e, f, g, h]
 
-
-def parse(objs):
+def parse_graph(objs) -> Graph:
     wall1 = objs["wall1"]
     wall2 = objs["wall2"]
     wall3 = objs["wall3"]
-
     outer = get_middle_from_corners(get_corners(wall1), get_corners(wall2))
     inner = get_middle_from_corners(get_corners(wall3), get_corners(wall2))
-
-
     matrix = [
         [1, 7],
         [0, 2],
