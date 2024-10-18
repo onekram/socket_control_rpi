@@ -1,8 +1,7 @@
-
-class Vertex:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+class Graph:
+    def __init__(self, vertexes, matrix):
+        self.vertexes = vertexes
+        self.matrix = matrix
 
 def get_corners(obj):
     x, y, w, h = obj.xywh[0]
@@ -38,10 +37,36 @@ def parse(objs):
     outer = get_middle_from_corners(get_corners(wall1), get_corners(wall2))
     inner = get_middle_from_corners(get_corners(wall3), get_corners(wall2))
 
-    return outer + inner
 
+    matrix = [
+        [1, 7],
+        [0, 2],
+        [1, 3],
+        [2, 4],
+        [3, 5],
+        [4, 6],
+        [5, 7],
+        [6, 0],
+        [15, 9],
+        [8, 10],
+        [9, 11],
+        [10, 12],
+        [11, 13],
+        [12, 14],
+        [13, 15],
+        [14, 8]
+    ]
 
-
-
-
-
+    if not "part_left" in objs:
+        matrix[7].append(15)
+        matrix[15].append(7)
+    if not "part_up" in objs:
+        matrix[1].append(9)
+        matrix[9].append(1)
+    if not "part_right" in objs:
+        matrix[3].append(11)
+        matrix[11].append(3)
+    if not "part_left" in objs:
+        matrix[5].append(13)
+        matrix[13].append(5)
+    return Graph(outer + inner, matrix)

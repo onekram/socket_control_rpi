@@ -44,7 +44,7 @@ def check_correct(boxes):
     for part in types["part"]:
         x, y, w, h = part.xywh[0]
         if y - h//2 > y_3 + h_3//2:
-            res["part_d"] = part
+            res["part_down"] = part
         if y + h//2 < y_3 - h_3//2:
             res["part_up"] = part
         if x + w//2 < x_3 - w_3//2:
