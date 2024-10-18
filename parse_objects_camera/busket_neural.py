@@ -82,7 +82,7 @@ def follow_object_basket(onnx_model, type_basket):
                  # новая версия
                  if y < 220:
                      set_speed(s, SPEED_FORWARD)
-                     forward_time_without_stop(s)
+                     forward_without_stop(s)
                  else:
                      stop(s)
                      break

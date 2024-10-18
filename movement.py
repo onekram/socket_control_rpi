@@ -19,6 +19,11 @@ def forward(s: socket):
     ba = bytearray(b'\xab\x00\x01\x00\xff')
     s.sendall(ba)
 
+def back(s: socket):
+    ba = bytearray(b'\xab\x00\x02\x00\xff')
+    s.sendall(ba)
+
+
 def forward_dist(s: socket, dist: int):
     forward(s)
     time.sleep(dist)
@@ -42,6 +47,11 @@ def forward_time(s: socket.socket, t: float):
     time.sleep(t)
     stop(s)
 
+def back_time(s: socket.socket, t: float):
+    back(s)
+    time.sleep(t)
+    stop(s)
+
 def turn_right_90(s: socket.socket):
     spin_right(s)
     time.sleep(1.3)
@@ -57,7 +67,10 @@ def turn_to_right(s: socket.socket, t: float):
     time.sleep(t)
     stop(s)
 
-def forward_time_without_stop(s: socket.socket):
+def forward_without_stop(s: socket.socket):
+    forward(s)
+
+def back_without_stop(s: socket.socket):
     forward(s)
 
 def turn_to_left_without_stop(s: socket.socket):

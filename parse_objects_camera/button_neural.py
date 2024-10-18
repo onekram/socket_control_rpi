@@ -87,7 +87,7 @@ def follow_object_button(onnx_model, s, type_button):
              else:
                  if w * h < obj_size:
                      set_speed(s, SPEED_FORWARD)
-                     forward_time_without_stop(s)
+                     forward_without_stop(s)
                  else:
                      stop(s)
                      break

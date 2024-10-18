@@ -1,4 +1,6 @@
 import logging
+import time
+
 import cv2
 from parse_objects_camera.get_res_neural import get_result_yolo
 from ultralytics import YOLO
@@ -14,13 +16,14 @@ DRAW = True
 
 DELAY_SECONDS = 0.1
 SPEED_FORWARD = 45
+SPEED_BACK = 60
 SPEED_TURN = 30
 
 def hand_manip(s):
     prepare(s)
     time.sleep(1)
     set_speed(s, SPEED_FORWARD)
-    forward_time(s, 1.3)
+    forward_time(s, 1)
     time.sleep(1)
     catch(s)
     time.sleep(1)
@@ -60,10 +63,10 @@ def turn_to_catch_position(onnx_model, cap, s):
 def follow_object_cube(onnx_model, s):
     d_x = 230
     obj_size = 15000
+    border = 100
     cap = cv2.VideoCapture("http://192.168.2.99:8080/?action=stream")  # Открываем видеопоток с камеры
     cap.set(3, 320)  # Устанавливаем ширину изображения в 320 пикселей
     cap.set(4, 320)  # Устанавливаем высоту изображения в 320 пикселей
-    border = 100
     while True:  # Бесконечный цикл
         ret, frame = cap.read()  # Считываем кадр с камеры
         if not ret:
@@ -84,7 +87,7 @@ def follow_object_cube(onnx_model, s):
              else:
                  if w * h < obj_size:
                      set_speed(s, SPEED_FORWARD)
-                     forward_time_without_stop(s)
+                     forward_without_stop(s)
                  else:
                      stop(s)
                      break
@@ -99,13 +102,41 @@ def follow_object_cube(onnx_model, s):
     if DRAW:
         cv2.destroyAllWindows()
 
+# полный цикл работы с кубикиком
+def work_cube(onnx_model, s):
+    sf.start(s)
+
+    follow_object_cube(onnx_model, s)
+    while True:
+        set_speed(s, SPEED_BACK)
+        back_time(s, 1.5)
+        time.sleep(2)
+        cap = cv2.VideoCapture("http://192.168.2.99:8080/?action=stream")  # Открываем видеопоток с камеры
+        cap.set(3, 320)  # Устанавливаем ширину изображения в 320 пикселей
+        cap.set(4, 320)  # Устанавливаем высоту изображения в 320 пикселей
+        ret, frame = cap.read()  # Считываем кадр с камеры
+        if not ret:
+            print("Error: Could not read frame.")
+            return None
+        res = get_result_yolo(onnx_model, frame, ObjectKind.CUBE)
+        cap.release()
+        if DRAW:
+            cv2.destroyAllWindows()
+        if res is not None:
+            x, y, w, h = res.xywh[0]
+            x, y, w, h = int(x), int(y), int(w), int(h)
+            if x < 100 and y < 50:
+                return 0
+        else:
+            return 0
+        follow_object_cube(onnx_model, s)
+
+
 
 if __name__ == "__main__":
     logging.disable(logging.FATAL)
     onnx_model = YOLO('web_cam_model_v2.onnx')
     s = f.create_connect()
-
-    sf.start(s)
-    follow_object_cube(onnx_model, s)
+    work_cube(onnx_model, s)
     time.sleep(2)
     hand.put_down(s)
