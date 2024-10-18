@@ -1,18 +1,10 @@
 from ultralytics import YOLO
 
-onnx_model = YOLO('walls/walls.onnx')
-
-def get_result_yolo(frame):
-    results = onnx_model(frame)
-    boxes = results[0].boxes
-    return boxes
-
-def check_correct(boxes):
-    l = onnx_model.names
+def check_correct(boxes, names):
     types = dict()
     for box in boxes:
         cls = int(box.cls)
-        name = l[cls]
+        name = names[cls]
         if name in types:
             types[name].append(box)
         else:
@@ -47,16 +39,10 @@ def check_correct(boxes):
             res["part_right"] = part
     return res
 
-def get_from_cap(frame):
-    boxes = get_result_yolo(frame)
-    boxes = check_correct(boxes)
-    return boxes
-
-
-def record_rtsp_stream(frame):
-    for i in range(3):
-        objs = get_from_cap(frame)
-        if objs is not None:
-            return objs
-
-    raise RuntimeError("Bad frame bird eye")
+# def record_rtsp_stream(frame):
+#     for i in range(3):
+#         objs = get_from_cap(frame)
+#         if objs is not None:
+#             return objs
+#
+#     raise RuntimeError("Bad frame bird eye")
