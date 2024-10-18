@@ -1,5 +1,4 @@
-import cv2
-from bird_eye.walls.graph import Graph
+from .graph import Graph
 
 def get_corners(obj):
     x, y, w, h = obj.xywh[0]
@@ -25,7 +24,6 @@ def get_middle_from_corners(corners1, corners2):
     h = get_middle(a, g)
 
     return [a, b, c, d, e, f, g, h]
-
 
 def parse_graph(objs) -> Graph:
     wall1 = objs["wall1"]
@@ -65,13 +63,3 @@ def parse_graph(objs) -> Graph:
         matrix[5].append(13)
         matrix[13].append(5)
     return Graph(outer + inner, matrix)
-
-
-def draw_graph(frame, graph: Graph):
-    for v in graph.vertexes():
-        x, y = v
-        cv2.circle(frame, (x, y), 20, (255, 0, 0), -1)
-
-    for i, line in enumerate(graph.matrix()):
-        for j in line:
-            cv2.line(frame, graph[i], graph[j], (0, 255, 0), 2)

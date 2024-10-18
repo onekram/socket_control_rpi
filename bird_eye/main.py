@@ -1,6 +1,7 @@
 import walls
-import targets
 import cv2
+
+from bird_eye.walls.model import WallsModel
 from frame import get_frame
 import logging
 from model import Model
@@ -12,19 +13,17 @@ def main():
 
     frame = get_frame(cap)
 
-    model_walls = Model('walls/walls.onnx')
-    boxes_walls = model_walls.get_boxes(frame)
-    objs = walls.check_correct(boxes_walls, model_walls.names())
+    model_walls = WallsModel('walls/walls.onnx')
+    objs = model_walls.get_objs(frame)
 
     graph = walls.parse_graph(objs)
-    path = walls.bfs_shortest_path(graph, 0, 4)
-
+    path = graph.get_path(0, 4)
 
     model_targets = Model('targets/bird_eye_best_v3.onnx')
     model_targets.draw_boxes(frame)
 
-    walls.draw_graph(frame, graph)
-    walls.draw_path(frame, graph, path)
+    graph.draw(frame)
+    path.draw(frame)
 
     cv2.imshow('Corrected Frame', frame)
     cv2.waitKey(0)
