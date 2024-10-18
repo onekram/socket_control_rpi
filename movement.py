@@ -23,24 +23,23 @@ def back(s: socket):
     ba = bytearray(b'\xab\x00\x02\x00\xff')
     s.sendall(ba)
 
-
-def forward_dist(s: socket, dist: int):
-    forward(s)
-    time.sleep(dist)
-    stop(s)
-
 def spin_left(s: socket.socket):
     ba = bytearray(b'\xab\x00\x03\x00\xFF')
     send_command(s, ba)
 
-def turn_left_90(s: socket.socket):
-    spin_left(s)
-    time.sleep(1.3)
-    stop(s)
-
 def spin_right(s: socket.socket):
     ba = bytearray(b'\xab\x00\x04\x00\xFF')
     send_command(s, ba)
+
+def turn_left_90(s: socket.socket, v):
+    spin_left(s)
+    time.sleep(-0.027 * v + 2.64)
+    stop(s)
+
+def turn_right_90(s: socket.socket, v):
+    spin_right(s)
+    time.sleep(-0.027 * v + 2.64)
+    stop(s)
 
 def forward_time(s: socket.socket, t: float):
     forward(s)
@@ -52,15 +51,11 @@ def back_time(s: socket.socket, t: float):
     time.sleep(t)
     stop(s)
 
-def turn_right_90(s: socket.socket):
-    spin_right(s)
-    time.sleep(1.3)
-    stop(s)
-
 def turn_to_left(s: socket.socket, t: float):
     spin_left(s)
     time.sleep(t)
     stop(s)
+
 
 def turn_to_right(s: socket.socket, t: float):
     spin_right(s)
@@ -71,10 +66,21 @@ def forward_without_stop(s: socket.socket):
     forward(s)
 
 def back_without_stop(s: socket.socket):
-    forward(s)
+    back(s)
 
 def turn_to_left_without_stop(s: socket.socket):
     spin_left(s)
 
 def turn_to_right_without_stop(s: socket.socket):
     spin_right(s)
+
+
+def turn_left_corner(s: socket, corner: int):
+    spin_left(s)
+    time.sleep(corner * 0.73 / 90 + 0.02)
+    stop(s)
+
+def turn_right_corner(s: socket, corner: int):
+    spin_left(s)
+    time.sleep(corner * 0.73 / 90 + 0.02)
+    stop(s)
