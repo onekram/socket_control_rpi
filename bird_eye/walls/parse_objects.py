@@ -1,7 +1,22 @@
+import cv2
+import numpy as np
+
 class Graph:
     def __init__(self, vertexes, matrix):
-        self.vertexes = vertexes
-        self.matrix = matrix
+        self.__vertexes = vertexes
+        self.__matrix = matrix
+
+    def neighbours(self, idx):
+        return self.__matrix[idx]
+
+    def __getitem__(self, index):
+        return self.__vertexes[index]
+
+    def vertexes(self):
+        return self.__vertexes
+
+    def matrix(self):
+        return self.__matrix
 
 def get_corners(obj):
     x, y, w, h = obj.xywh[0]
@@ -29,7 +44,7 @@ def get_middle_from_corners(corners1, corners2):
     return [a, b, c, d, e, f, g, h]
 
 
-def parse(objs):
+def parse_graph(objs):
     wall1 = objs["wall1"]
     wall2 = objs["wall2"]
     wall3 = objs["wall3"]
@@ -70,3 +85,13 @@ def parse(objs):
         matrix[5].append(13)
         matrix[13].append(5)
     return Graph(outer + inner, matrix)
+
+
+def draw_graph(frame, graph: Graph):
+    for v in graph.vertexes():
+        x, y = v
+        cv2.circle(frame, (x, y), 20, (255, 0, 0), -1)
+
+    for i, line in enumerate(graph.matrix()):
+        for j in line:
+            cv2.line(frame, graph[i], graph[j], (0, 255, 0), 2)

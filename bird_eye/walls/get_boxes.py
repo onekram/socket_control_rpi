@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from torch.cuda import graph
 from ultralytics import YOLO
 import logging
 
@@ -53,7 +54,7 @@ def check_correct(boxes):
             res["part_right"] = part
     return res
 
-def get_from_cap(cap, draw=False):
+def get_from_cap(cap):
     if not cap.isOpened():
         print("Error: Could not open video stream.")
         return
@@ -74,7 +75,7 @@ def get_from_cap(cap, draw=False):
         print("Error: Could not read frame.")
         return
 
-    frame = cv2.undistort(frame, camera_matrix, dist_coeffs, None, new_camera_matrix)
+    # frame = cv2.undistort(frame, camera_matrix, dist_coeffs, None, new_camera_matrix)
 
     x, y, w, h = roi
     frame = frame[y:y+h, x:x+w]
@@ -87,57 +88,27 @@ def get_from_cap(cap, draw=False):
 
     boxes = get_result_yolo(frame)
     boxes = check_correct(boxes)
-    if draw:
-        for name, box in boxes.items():
-            x, y, w, h = box.xywh[0]
-            x, y, w, h = int(x), int(y), int(w), int(h)
-            p = round(float(box.conf), 3)
-
-            cv2.putText(frame, f"({x - w // 2}, {y - h // 2})", (x - w // 2, y - h // 2),
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                        0.4, (0, 0, 255), 2)
-
-            cv2.putText(frame, f"({x + w // 2}, {y - h // 2})", (x + w // 2, y - h // 2),
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                        0.4, (0, 0, 255), 2)
-
-            cv2.putText(frame, f"({x - w // 2}, {y + h // 2})", (x - w // 2, y + h // 2),
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                        0.4, (0, 0, 255), 2)
-
-            cv2.putText(frame, f"({x + w // 2}, {y + h // 2})", (x + w // 2, y + h // 2),
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                        0.4, (0, 0, 255), 2)
-
-            cv2.putText(frame, f"{name}", (x, y - h//2 + 10),
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                        0.4, (0, 255, 0), 2)
-
-            cv2.rectangle(frame, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (255, 255, 255), 1)
     return boxes, frame
 
 
-def record_rtsp_stream(rtsp_url, draw=False):
+def record_rtsp_stream(rtsp_url):
     cap = cv2.VideoCapture(rtsp_url)
     for i in range(3):
-        objs, frame = get_from_cap(cap, draw)
+        objs, frame = get_from_cap(cap)
         if objs is not None:
-            for i, v in enumerate(parse(objs)):
-                cv2.circle(frame, v, 10, (0, 255, 0), -1)
-                cv2.putText(frame, f"{i}", v,
-                            cv2.FONT_HERSHEY_SIMPLEX,
-                            1, (0, 120, 120), 2)
-            if draw:
-                cv2.imshow('Corrected Frame', frame)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
             cap.release()
-            return objs
+            return objs, frame
 
     raise RuntimeError("Bad frame bird eye")
 
 
 if __name__ == "__main__":
-    url = "rtsp://Admin:rtf123@192.168.2.250:554/1/1"
-    record_rtsp_stream(url, True)
+    # url = "rtsp://Admin:rtf123@192.168.2.250:554/1/1"
+    url = "output.mp4"
+    objs, frame = record_rtsp_stream(url)
+    graph = parse_graph(objs)
+    draw_graph(frame, graph)
+    cv2.imshow('Corrected Frame', frame)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
