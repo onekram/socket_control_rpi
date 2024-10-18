@@ -29,14 +29,3 @@ def get_frame(cap):
     frame = cv2.resize(frame, (int(960 * 1.3), int(540 * 1.3)))
 
     return frame
-
-def draw_boxes(frame, boxes, model):
-    for i, box in enumerate(boxes):
-        name = model.names[int(box.cls)]
-        x, y, w, h = box.xywh[0]
-        x, y, w, h = int(x), int(y), int(w), int(h)
-        p = round(float(box.conf), 3)
-        cv2.putText(frame, f"{name} | {p}", (x, y),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    1, (0, 0, 0), 2)
-        cv2.rectangle(frame, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (255, 255, 255), 2)
