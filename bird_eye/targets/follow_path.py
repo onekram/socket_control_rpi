@@ -1,4 +1,6 @@
 import socket
+import time
+
 import numpy as np
 from functions import create_connect
 from typing import Tuple
@@ -66,8 +68,11 @@ def robot_to_point(s: socket.socket, robot_cords: Tuple[int, int], grabber_cords
     v = (point_cords[0] - robot_cords[0], point_cords[1] - robot_cords[1])
     dist = np.linalg.norm(v)
     angle = angle_between_vectors(robot_cords, grabber_cords, point_cords)
+
     rotate_by_angle(s, angle)
+    time.sleep(0.5)
     forward_dist(s, dist)
+    time.sleep(0.5)
 
 
 def follow_by_path(s : socket.socket, model_targets : Model, path : Path, color : bool) -> None:
