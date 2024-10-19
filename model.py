@@ -29,5 +29,12 @@ class Model:
                         1, (0, 0, 0), 2)
             cv2.rectangle(frame, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (255, 255, 255), 2)
 
+    def class_id_by_name(self, class_name : str):
+        names = self.names()
+        return names.index(class_name)
+
+    #To write
+    #def update(self, stream_url : str):
+
     def names(self):
         return self.model.names
