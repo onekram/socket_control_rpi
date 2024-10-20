@@ -15,9 +15,7 @@ from bird_eye.walls.parse_objects import get_corners
 
 def correct_distance(distance : float, wall_obj) -> float:
     x, y, w, h = get_corners(wall_obj)
-
     cm_in_pixels = w / 400
-
     return distance * cm_in_pixels
 
 
