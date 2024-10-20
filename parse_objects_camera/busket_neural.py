@@ -12,12 +12,9 @@ import functions as f
 from movement import *
 from servo import add_functions as sf
 from cube_neural import follow_object_cube
+from constants import *
 
-DRAW = True
 
-DELAY_SECONDS = 0.1
-SPEED_FORWARD = 45
-SPEED_TURN = 30
 
 
 def draw_info(frame, x, y, w, h):
@@ -55,7 +52,7 @@ def turn_to_put_hand_position(onnx_model, cap, s, type_basket):
 def follow_object_basket(onnx_model, type_basket):
     d_x = 250
     obj_size = 100000
-    cap = cv2.VideoCapture("http://192.168.2.99:8080/?action=stream")  # Открываем видеопоток с камеры
+    cap = cv2.VideoCapture(f"http://{HOST}:8080/?action=stream")  # Открываем видеопоток с камеры
     cap.set(3, 320)  # Устанавливаем ширину изображения в 320 пикселей
     cap.set(4, 320)  # Устанавливаем высоту изображения в 320 пикселей
     border = 100

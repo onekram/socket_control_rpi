@@ -9,13 +9,9 @@ from parse_objects_camera.objectkind import ObjectKind
 import functions as f
 from movement import *
 from servo import add_functions as sf
+from constants import *
 
 
-DRAW = True
-
-DELAY_SECONDS = 0.1
-SPEED_FORWARD = 45
-SPEED_TURN = 30
 
 def hand_fall(s):
     fall(s)
@@ -63,7 +59,7 @@ def turn_to_fall_hand_position(onnx_model, cap, s, type_button):
 def follow_object_button(onnx_model, s, type_button):
     d_x = 250
     obj_size = 34000
-    cap = cv2.VideoCapture("http://192.168.2.99:8080/?action=stream")  # Открываем видеопоток с камеры
+    cap = cv2.VideoCapture(f"http://{HOST}:8080/?action=stream")  # Открываем видеопоток с камеры
     cap.set(3, 480)  # Устанавливаем ширину изображения в 320 пикселей
     cap.set(4, 320)  # Устанавливаем высоту изображения в 320 пикселей
     border = 100

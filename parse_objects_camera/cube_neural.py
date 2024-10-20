@@ -10,14 +10,7 @@ import functions as f
 from movement import *
 from servo import add_functions as sf
 from servo import hand
-
-
-DRAW = True
-
-DELAY_SECONDS = 0.1
-SPEED_FORWARD = 45
-SPEED_BACK = 60
-SPEED_TURN = 30
+from constants import *
 
 def hand_manip(s):
     prepare(s)
@@ -64,7 +57,7 @@ def follow_object_cube(onnx_model, s):
     d_x = 230
     obj_size = 15000
     border = 100
-    cap = cv2.VideoCapture("http://192.168.2.99:8080/?action=stream")  # Открываем видеопоток с камеры
+    cap = cv2.VideoCapture(f"http://{HOST}:8080/?action=stream")  # Открываем видеопоток с камеры
     cap.set(3, 320)  # Устанавливаем ширину изображения в 320 пикселей
     cap.set(4, 320)  # Устанавливаем высоту изображения в 320 пикселей
     while True:  # Бесконечный цикл
@@ -107,11 +100,12 @@ def work_cube(onnx_model, s):
     sf.start(s)
 
     follow_object_cube(onnx_model, s)
+    time.sleep(0.5)
     while True:
         set_speed(s, SPEED_BACK)
         back_time(s, 1.5)
         time.sleep(2)
-        cap = cv2.VideoCapture("http://192.168.2.99:8080/?action=stream")  # Открываем видеопоток с камеры
+        cap = cv2.VideoCapture(f"http://{HOST}:8080/?action=stream")  # Открываем видеопоток с камеры
         cap.set(3, 320)  # Устанавливаем ширину изображения в 320 пикселей
         cap.set(4, 320)  # Устанавливаем высоту изображения в 320 пикселей
         ret, frame = cap.read()  # Считываем кадр с камеры
