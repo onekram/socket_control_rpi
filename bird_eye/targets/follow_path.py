@@ -9,8 +9,17 @@ from servo import add_functions as sf
 from bird_eye.walls.path import *
 from bird_eye.walls.graph import *
 from model import  Model
+from bird_eye.walls.parse_objects import get_corners
 
 #FIVE_DEGREES = np.pi / 36
+
+def correct_distance(distance : float, wall_obj) -> float:
+    x, y, w, h = get_corners(wall_obj)
+
+    cm_in_pixels = w / 400
+
+    return distance * cm_in_pixels
+
 
 def angle_between_vectors(point_start : Tuple[int, int], point_end_1 : Tuple[int, int], point_end_2 :  Tuple[int, int]) -> float:
     vector_1 : Tuple[float, float] = (point_end_1[0] - point_start[0], point_end_1[1] - point_start[1])
@@ -64,18 +73,18 @@ def rotate_by_angle(s: socket.socket, angle : float) -> None:
     else:
         turn_right_angle(s, abs(angle) / np.pi * 180)
 
-def robot_to_point(s: socket.socket, robot_cords: Tuple[int, int], grabber_cords: Tuple[int, int], point_cords: Tuple[int, int]) -> None:
+def robot_to_point(s: socket.socket, robot_cords: Tuple[int, int], grabber_cords: Tuple[int, int], point_cords: Tuple[int, int], wall_obj) -> None:
     v = (point_cords[0] - robot_cords[0], point_cords[1] - robot_cords[1])
     dist = np.linalg.norm(v)
     angle = angle_between_vectors(robot_cords, grabber_cords, point_cords)
 
     rotate_by_angle(s, angle)
     time.sleep(0.5)
-    forward_dist(s, dist)
+    forward_dist(s, correct_distance(dist, wall_obj))
     time.sleep(0.5)
 
 
-def follow_by_path(s : socket.socket, model_targets : Model, path : Path, color : bool) -> None:
+def follow_by_path(s : socket.socket, model_targets : Model, path : Path, color : bool, wall_obj) -> None:
     for vertex in path.vertexes:
         #model_targets.update()
         robot_cords = robot_body_cords(model_targets, color)
