@@ -74,16 +74,16 @@ def turn_to_left_without_stop(s: socket.socket):
 def turn_to_right_without_stop(s: socket.socket):
     spin_right(s)
 
-# скорость равна 70
+# скорость равна 50 угол в градусах
 def turn_left_angle(s: socket, angle : float):
     spin_left(s)
-    time.sleep(angle * 1 / 90 + 0.02)
+    time.sleep(angle * 1.14 / 90 + 0.02)
     stop(s)
 
-# скорость = 70
+# скорость = 50 угол в грудусах
 def turn_right_angle(s: socket, angle : float):
     spin_right(s)
-    time.sleep(angle * 1 / 90 + 0.02)
+    time.sleep(angle * 1.12 / 90 + 0.02)
     stop(s)
 
 # вперёд на определённую дистанцию в см
