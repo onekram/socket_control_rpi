@@ -33,7 +33,12 @@ class Model:
 
     def class_id_by_name(self, class_name : str):
         names = self.names()
-        return names.index(class_name)
+        reverse_names = {}
+        for i in range(len(names)):
+            reverse_names[names[i]] = i
+        #print(names[0])
+        #print(names)
+        return reverse_names[class_name]
 
 
     def update(self, url : str):

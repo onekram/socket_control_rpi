@@ -2,6 +2,8 @@ import socket
 import time
 
 import numpy as np
+
+from frame import get_frame
 from functions import create_connect
 from typing import Tuple
 from movement import turn_left_angle, turn_right_angle, set_speed, forward_dist
@@ -13,10 +15,11 @@ from bird_eye.walls.parse_objects import get_corners
 
 #FIVE_DEGREES = np.pi / 36
 
-def correct_distance(distance : float, wall_obj) -> float:
-    x, y, w, h = get_corners(wall_obj)
+def correct_distance(distance : int, wall_obj) -> int:
+    x, y, w, h = wall_obj.xywh[0]
     cm_in_pixels = w / 400
-    return distance * cm_in_pixels
+    print(distance)
+    return abs(int(distance * cm_in_pixels))
 
 
 def angle_between_vectors(point_start : Tuple[int, int], point_end_1 : Tuple[int, int], point_end_2 :  Tuple[int, int]) -> float:
@@ -28,17 +31,19 @@ def angle_between_vectors(point_start : Tuple[int, int], point_end_1 : Tuple[int
 
     return angle1 - angle2
 
-def find_box_center(boxes : list, target_class_id : int) -> Tuple[int, int]:
-    for box in boxes:
-        if box['class_id'] == target_class_id:
-            x1, y1, x2, y2 = box['box']
+def find_box_center(boxes, target_class_id : int) -> Tuple[int, int]:
+    for box in range(len(boxes)):
+        if boxes.cls[box] == target_class_id:
+            x1, y1, x2, y2 = boxes[box].xyxy[0]
+            x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
             center_x = (x1 + x2) // 2
             center_y = (y1 + y2) // 2
-            return center_x, center_y
+            return (center_x, center_y)
 
 def robot_body_cords(model_targets : Model, color : bool) -> Tuple[int, int]:
     color_class_name = "green_robot" if color else "red_robot"
     color_id = model_targets.class_id_by_name(color_class_name)
+    print(color_id)
     desired_robot_body_center = find_box_center(model_targets.boxes, color_id)
     return desired_robot_body_center
 
@@ -49,10 +54,11 @@ def robot_grabber_cords(model_targets: Model, robot_cords : Tuple[int, int]) -> 
 
     nearest_box = None
     min_distance = float('inf')
-
-    for box in model_targets.boxes:
-        if box['class_id'] == grabber_id:
-            x1, y1, x2, y2 = box['box']
+    boxes = model_targets.boxes
+    for box in range(len(model_targets.boxes)):
+        if boxes.cls[box] == grabber_id:
+            x1, y1, x2, y2 = boxes[box].xyxy[0]
+            x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
             center_x : float = (x1 + x2) // 2
             center_y : float = (y1 + y2) // 2
 
@@ -60,33 +66,42 @@ def robot_grabber_cords(model_targets: Model, robot_cords : Tuple[int, int]) -> 
 
             if distance < min_distance:
                 min_distance = distance
-                nearest_box = box
-
-    return nearest_box
+                nearest_box = boxes[box]
+    nearest_box_center = (int(nearest_box.xywh[0][0]), int(nearest_box.xywh[0][1]))
+    return nearest_box_center
 
 def rotate_by_angle(s: socket.socket, angle : float) -> None:
     set_speed(s, 50)
-    if angle > 0:
-        turn_left_angle(s, abs(angle) / np.pi * 180)
+    if angle < 0:
+        turn_left_angle(s, int(abs(angle) / np.pi * 180))
     else:
-        turn_right_angle(s, abs(angle) / np.pi * 180)
+        turn_right_angle(s, int(abs(angle) / np.pi * 180))
 
 def robot_to_point(s: socket.socket, robot_cords: Tuple[int, int], grabber_cords: Tuple[int, int], point_cords: Tuple[int, int], wall_obj) -> None:
     v = (point_cords[0] - robot_cords[0], point_cords[1] - robot_cords[1])
+    print(v)
     dist = np.linalg.norm(v)
-    angle = angle_between_vectors(robot_cords, grabber_cords, point_cords)
 
+    angle = angle_between_vectors(robot_cords, grabber_cords, point_cords)
     rotate_by_angle(s, angle)
     time.sleep(0.5)
     forward_dist(s, correct_distance(dist, wall_obj))
     time.sleep(0.5)
 
 
-def follow_by_path(s : socket.socket, model_targets : Model, path : Path, color : bool, wall_obj) -> None:
+def follow_by_path(s : socket.socket, model_targets : Model, path : Path, color : bool, wall_obj, cap) -> None:
+    i = 0
+
     for vertex in path.vertexes:
-        model_targets.update("rtsp://Admin:rtf123@192.168.2.250:554/1/1")
+        frame = get_frame(cap)
+
+        model_targets.get_boxes(frame)
+
+
         robot_cords = robot_body_cords(model_targets, color)
         grabber_cords = robot_grabber_cords(model_targets, robot_cords)
+        print("grabber_cords")
+        print(grabber_cords)
         robot_to_point(s, robot_cords, grabber_cords, vertex, wall_obj)
 
 
