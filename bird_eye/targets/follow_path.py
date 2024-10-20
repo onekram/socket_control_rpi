@@ -84,10 +84,10 @@ def robot_to_point(s: socket.socket, robot_cords: Tuple[int, int], grabber_cords
 
 def follow_by_path(s : socket.socket, model_targets : Model, path : Path, color : bool, wall_obj) -> None:
     for vertex in path.vertexes:
-        #model_targets.update()
+        model_targets.update("rtsp://Admin:rtf123@192.168.2.250:554/1/1")
         robot_cords = robot_body_cords(model_targets, color)
         grabber_cords = robot_grabber_cords(model_targets, robot_cords)
-        robot_to_point(s, robot_cords, grabber_cords, vertex)
+        robot_to_point(s, robot_cords, grabber_cords, vertex, wall_obj)
 
 
 

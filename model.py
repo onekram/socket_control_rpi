@@ -1,5 +1,7 @@
 from ultralytics import YOLO
+from frame import get_frame
 import cv2
+
 
 class Model:
     def __init__(self, model_path: str):
@@ -33,8 +35,12 @@ class Model:
         names = self.names()
         return names.index(class_name)
 
-    #To write
-    #def update(self, stream_url : str):
+
+    def update(self, url : str):
+        cap = cv2.VideoCapture(url)
+        frame = get_frame(cap)
+        self.get_boxes(frame)
+
 
     def names(self):
         return self.model.names
