@@ -77,7 +77,7 @@ def follow_object_basket(onnx_model, type_basket):
                  # старая версия
                  # 260 + 40 * (w * h < obj_size)
                  # новая версия
-                 if y < 220:
+                 if y < 300:
                      set_speed(s, SPEED_FORWARD)
                      forward_without_stop(s)
                  else:
@@ -102,5 +102,5 @@ if __name__ == "__main__":
     s = f.create_connect()
 
     sf.start(s)
-    follow_object_ball(first_onnx_model, s)
+    follow_object_cube(first_onnx_model, s)
     follow_object_basket(first_onnx_model, ObjectKind.RED_BASKET)
