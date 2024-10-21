@@ -10,7 +10,7 @@ import functions as f
 from movement import *
 from servo import add_functions as sf
 from servo import hand
-from constants import *
+from parse_objects_camera.constants import *
 
 def hand_manip(s):
     prepare(s)

@@ -9,7 +9,7 @@ from parse_objects_camera.objectkind import ObjectKind
 import functions as f
 from movement import *
 from servo import add_functions as sf
-from constants import *
+from parse_objects_camera.constants import *
 
 
 

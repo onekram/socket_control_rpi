@@ -6,16 +6,12 @@ import cv2
 class Model:
     def __init__(self, model_path: str):
         self.model = YOLO(model_path)
-        self.frame = None
         self.boxes = None
 
     def get_boxes(self, frame):
-        if self.frame is frame:
-            return self.boxes
-
-        results = self.model(frame)
+        results = self.model(frame) # todo: try verifying which frame is being gotten
         self.boxes = results[0].boxes
-        self.frame = frame
+        # self.frame = frame
         return self.boxes
 
     def draw_boxes(self, frame):
@@ -33,12 +29,11 @@ class Model:
 
     def class_id_by_name(self, class_name : str):
         names = self.names()
-        reverse_names = {}
         for i in range(len(names)):
-            reverse_names[names[i]] = i
+            if names[i] == class_name:
+                return i
         #print(names[0])
         #print(names)
-        return reverse_names[class_name]
 
 
     def update(self, url : str):

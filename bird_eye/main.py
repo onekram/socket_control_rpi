@@ -3,6 +3,7 @@ import time
 import walls
 import cv2
 
+from bird_eye.targets.follow_path import follow_by_path_wo_constants, follow_by_path_test
 from bird_eye.walls.model import WallsModel
 from color import Color
 from frame import get_frame
@@ -18,6 +19,7 @@ logging.disable(logging.FATAL)
 def main():
     url = "rtsp://Admin:rtf123@192.168.2.250:554/1/1"
     cap = cv2.VideoCapture(url)
+    cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
     frame = get_frame(cap)
 
     s = create_connect()
@@ -36,12 +38,14 @@ def main():
 
     graph.draw(frame)
     path.draw(frame)
-    time.sleep(0.4)
-    cv2.waitKey(1)
-    cv2.imshow('Corrected Frame', frame)
-    cv2.waitKey(1)
+    print("Follow path processing")
 
-    follow_by_path(s, model_targets, path, 1, objs["wall1"], cap)
+    # cv2.imshow('Image', frame)
+    # cv2.waitKey(1)
+
+    # follow_by_path(s, model_targets, path, 1, objs["wall1"], cap)
+    follow_by_path_test(model_targets, path, 1, cap)
+
 
 if __name__ == "__main__":
     main()
