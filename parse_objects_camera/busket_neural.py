@@ -79,7 +79,7 @@ def follow_object_basket(onnx_model, type_basket):
                  # старая версия
                  # 260 + 40 * (w * h < obj_size)
                  # новая версия
-                 if y < 300:
+                 if y < 280:
                      set_speed(s, SPEED_FORWARD)
                      forward_without_stop(s)
                  else:
