@@ -4,13 +4,14 @@ import walls
 import cv2
 
 from bird_eye.walls.model import WallsModel
+from color import Color
 from frame import get_frame
 import logging
 from targets.follow_path import follow_by_path
 from model import Model
 from functions import create_connect
 from servo import  add_functions as sf
-from servo.hand import catch
+from servo.hand import catch, prepare_bird_eye
 from functions import set_color
 logging.disable(logging.FATAL)
 
@@ -21,7 +22,8 @@ def main():
 
     s = create_connect()
     sf.start(s)
-    catch(s)
+    set_color(s, Color.GREEN)
+    prepare_bird_eye(s)
 
     model_walls = WallsModel('walls/walls.onnx')
     objs = model_walls.get_objs(frame)
@@ -35,7 +37,9 @@ def main():
     graph.draw(frame)
     path.draw(frame)
     time.sleep(0.4)
+    cv2.waitKey(1)
     cv2.imshow('Corrected Frame', frame)
+    cv2.waitKey(1)
 
     follow_by_path(s, model_targets, path, 1, objs["wall1"], cap)
 

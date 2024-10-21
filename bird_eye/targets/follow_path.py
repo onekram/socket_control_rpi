@@ -13,16 +13,13 @@ from bird_eye.walls.graph import *
 from model import  Model
 from bird_eye.walls.parse_objects import get_corners
 
-def get_distance(point1 : Tuple[int, int], point2 : Tuple[int, int], wall_obj) -> float:
-    v = (point2[0] - point1[0], point2[1] - point1[0])
-    dist = np.linalg.norm(v)
-    return correct_distance(dist, wall_obj)
+#FIVE_DEGREES = np.pi / 36
 
-def correct_distance(distance : float, wall_obj) -> int:
+def correct_distance(distance : int, wall_obj) -> int:
     x, y, w, h = wall_obj.xywh[0]
     cm_in_pixels = w / 400
     print(distance)
-    return int(abs(distance * cm_in_pixels))
+    return abs(int(distance * cm_in_pixels))
 
 
 def angle_between_vectors(point_start : Tuple[int, int], point_end_1 : Tuple[int, int], point_end_2 :  Tuple[int, int]) -> float:
@@ -46,7 +43,6 @@ def find_box_center(boxes, target_class_id : int) -> Tuple[int, int]:
 def robot_body_cords(model_targets : Model, color : bool) -> Tuple[int, int]:
     color_class_name = "green_robot" if color else "red_robot"
     color_id = model_targets.class_id_by_name(color_class_name)
-    print(color_id)
     desired_robot_body_center = find_box_center(model_targets.boxes, color_id)
     return desired_robot_body_center
 
@@ -75,29 +71,39 @@ def robot_grabber_cords(model_targets: Model, robot_cords : Tuple[int, int]) -> 
 
 def rotate_by_angle(s: socket.socket, angle : float) -> None:
     set_speed(s, 50)
+    print(f"угол {int(abs(angle) / np.pi * 180)}")
     if angle < 0:
         turn_left_angle(s, int(abs(angle) / np.pi * 180))
     else:
         turn_right_angle(s, int(abs(angle) / np.pi * 180))
 
-def robot_to_point_wo_constants(s: socket.socket, model_targets : Model, point_cords: Tuple[int, int], wall_obj, cap, color : bool) -> None:
-    robot_cords = robot_body_cords(model_targets, color)
-    grabber_cords = robot_grabber_cords(model_targets, robot_cords)
+def robot_to_point(s: socket.socket, robot_cords: Tuple[int, int], grabber_cords: Tuple[int, int], point_cords: Tuple[int, int], wall_obj) -> None:
+    v = (point_cords[0] - robot_cords[0], point_cords[1] - robot_cords[1])
+    dist = np.linalg.norm(v)
 
-    distance = get_distance(robot_cords, point_cords, wall_obj)
+    angle = angle_between_vectors(robot_cords, grabber_cords, point_cords)
 
-    while distance > 15:
-        angle = angle_between_vectors(robot_cords, grabber_cords, point_cords)
-        while angle > np.pi / 36:
-            rotate_by_angle(s, angle)
-            time.sleep(1.5)
-            angle = angle_between_vectors(robot_cords, grabber_cords, point_cords)
-        forward_dist(s, distance)
-        distance = get_distance(robot_cords, point_cords, wall_obj)
-        time.sleep(1.5)
+    rotate_by_angle(s, angle)
+    time.sleep(0.5)
+    forward_dist(s, correct_distance(dist, wall_obj))
+    time.sleep(0.5)
 
 
+def follow_by_path(s : socket.socket, model_targets : Model, path : Path, color : bool, wall_obj, cap) -> None:
+    i = 0
 
-def follow_by_path_wo_constants(s : socket.socket, model_targets : Model, path : Path, color : bool, wall_obj, cap) -> None:
-    for vertex in path.vertexes:
-        robot_to_point_wo_constants(s, model_targets, vertex, wall_obj, cap, color)
+    for vertex in path.vertexes[1:]:
+        frame = get_frame(cap)
+
+        model_targets.get_boxes(frame)
+
+
+        robot_cords = robot_body_cords(model_targets, color)
+        grabber_cords = robot_grabber_cords(model_targets, robot_cords)
+        print("grabber_cords")
+        print(grabber_cords)
+        robot_to_point(s, robot_cords, grabber_cords, vertex, wall_obj)
+
+
+
+
