@@ -16,16 +16,15 @@ from servo import add_functions as sf
 
 if __name__ == "__main__":
     s = f.create_connect()
-    set_color(s, Color.GREEN)
-    # set_speed(s, 50)
-    #sf.start(s)
-    # for i in range(4):
-    #     set_speed(s, 70)
-    #     forward_dist(s, 50)
-    #     time.sleep(0.5)
-    #     set_speed(s, 50)
-    #     turn_right_angle(s,90)
-    #     time.sleep(0.5)
+    #set_color(s, Color.GREEN)
+    sf.start(s)
+    for i in range(1):
+        set_speed(s, 70)
+        forward_dist(s, 10)
+        time.sleep(0.5)
+        #set_speed(s, 50)
+        #turn_left_angle(s,90)
+        #time.sleep(0.5)
     #turn_left_corner(s, 90)
     #{0: 'ball', 1: 'basket', 2: 'blue_button', 3: 'cube', 4: 'green_button', 5: 'robot'}
 

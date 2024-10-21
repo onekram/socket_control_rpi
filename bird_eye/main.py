@@ -15,7 +15,7 @@ from functions import set_color
 logging.disable(logging.FATAL)
 
 def main():
-    url = "rtsp://Admin:rtf123@192.168.2.251:554/1/1"
+    url = "rtsp://Admin:rtf123@192.168.2.250:554/1/1"
     cap = cv2.VideoCapture(url)
     frame = get_frame(cap)
 
