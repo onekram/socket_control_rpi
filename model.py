@@ -44,3 +44,18 @@ class Model:
 
     def names(self):
         return self.model.names
+
+    def get_map(self, frame):
+        boxes = self.get_boxes(frame)
+        res = dict()
+        for box in boxes:
+            cls = int(box.cls)
+            name = self.names()[cls]
+            if name in res:
+                res[name].append(box)
+            else:
+                res[name] = [box]
+
+        for name, list_box in res.items():
+            list_box.sort(key=lambda b: round(float(b.conf), 3), reverse=True)
+        return res
