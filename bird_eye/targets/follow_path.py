@@ -113,7 +113,6 @@ def follow_by_path_wo_constants(s : socket.socket, model_targets : Model, path :
 
 def robot_to_point(s: socket.socket, robot_cords: Tuple[int, int], grabber_cords: Tuple[int, int], point_cords: Tuple[int, int], wall_obj) -> None:
     v = (point_cords[0] - robot_cords[0], point_cords[1] - robot_cords[1])
-    print(v)
     dist = np.linalg.norm(v)
 
     angle = angle_between_vectors(robot_cords, grabber_cords, point_cords)
