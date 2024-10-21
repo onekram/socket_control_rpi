@@ -59,6 +59,7 @@ def turn_to_fall_hand_position(onnx_model, cap, s, type_button):
 def follow_object_button(onnx_model, s, type_button):
     d_x = 250
     obj_size = 34000
+    cnt_not_obj = 0
     cap = cv2.VideoCapture(f"http://{HOST}:8080/?action=stream")  # Открываем видеопоток с камеры
     cap.set(3, 480)  # Устанавливаем ширину изображения в 320 пикселей
     cap.set(4, 320)  # Устанавливаем высоту изображения в 320 пикселей
@@ -89,7 +90,11 @@ def follow_object_button(onnx_model, s, type_button):
                      break
         else:
             stop(s)
-        if DRAW:
+            cnt_not_obj += 1
+        if cnt_not_obj > CNT_FRAME_NOT_OBJ:
+            cap.release()
+            return
+    if DRAW:
             cv2.imshow("Button_tracking", frame)
             cv2.waitKey(1)
     turn_to_fall_hand_position(onnx_model, cap, s, type_button)

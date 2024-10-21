@@ -57,6 +57,7 @@ def follow_object_cube(onnx_model, s):
     d_x = 230
     obj_size = 15000
     border = 100
+    cnt_not_obj = 0
     cap = cv2.VideoCapture(f"http://{HOST}:8080/?action=stream")  # Открываем видеопоток с камеры
     cap.set(3, 320)  # Устанавливаем ширину изображения в 320 пикселей
     cap.set(4, 320)  # Устанавливаем высоту изображения в 320 пикселей
@@ -86,6 +87,10 @@ def follow_object_cube(onnx_model, s):
                      break
         else:
             stop(s)
+            cnt_not_obj += 1
+        if cnt_not_obj > CNT_FRAME_NOT_OBJ:
+            cap.release()
+            return
         if DRAW:
             cv2.imshow("Image", frame)
             cv2.waitKey(1)

@@ -4,6 +4,7 @@ import time
 import cv2
 
 from parse_objects_camera.ball_neural import follow_object_ball
+from parse_objects_camera.cube_neural import work_cube
 from parse_objects_camera.get_res_neural import get_result_yolo
 from ultralytics import YOLO
 from servo.hand import fall, put_down
@@ -52,6 +53,7 @@ def turn_to_put_hand_position(onnx_model, cap, s, type_basket):
 def follow_object_basket(onnx_model, type_basket):
     d_x = 250
     obj_size = 100000
+    cnt_not_obj = 0
     cap = cv2.VideoCapture(f"http://{HOST}:8080/?action=stream")  # Открываем видеопоток с камеры
     cap.set(3, 320)  # Устанавливаем ширину изображения в 320 пикселей
     cap.set(4, 320)  # Устанавливаем высоту изображения в 320 пикселей
@@ -86,6 +88,10 @@ def follow_object_basket(onnx_model, type_basket):
 
         else:
             stop(s)
+            cnt_not_obj += 1
+        if cnt_not_obj > CNT_FRAME_NOT_OBJ:
+            cap.release()
+            return
         if DRAW:
             cv2.imshow("Image", frame)
             cv2.waitKey(1)
@@ -102,5 +108,5 @@ if __name__ == "__main__":
     s = f.create_connect()
 
     sf.start(s)
-    follow_object_cube(first_onnx_model, s)
+    work_cube(first_onnx_model, s)
     follow_object_basket(first_onnx_model, ObjectKind.RED_BASKET)
