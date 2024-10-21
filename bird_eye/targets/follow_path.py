@@ -81,6 +81,11 @@ def rotate_by_angle(s: socket.socket, angle : float) -> None:
         turn_right_angle(s, int(abs(angle) / np.pi * 180))
 
 def robot_to_point_wo_constants(s: socket.socket, model_targets : Model, point_cords: Tuple[int, int], wall_obj, cap, color : bool) -> None:
+    time.sleep(1.5)
+
+    frame = get_frame(cap)
+    model_targets.get_boxes(frame)
+
     robot_cords = robot_body_cords(model_targets, color)
     grabber_cords = robot_grabber_cords(model_targets, robot_cords)
 
@@ -91,13 +96,37 @@ def robot_to_point_wo_constants(s: socket.socket, model_targets : Model, point_c
         while angle > np.pi / 36:
             rotate_by_angle(s, angle)
             time.sleep(1.5)
+            frame = get_frame(cap)
+            model_targets.get_boxes(frame)
             angle = angle_between_vectors(robot_cords, grabber_cords, point_cords)
-        forward_dist(s, distance)
-        distance = get_distance(robot_cords, point_cords, wall_obj)
-        time.sleep(1.5)
 
+        forward_dist(s, distance)
+        time.sleep(1.5)
+        frame = get_frame(cap)
+        model_targets.get_boxes(frame)
+        distance = get_distance(robot_cords, point_cords, wall_obj)
 
 
 def follow_by_path_wo_constants(s : socket.socket, model_targets : Model, path : Path, color : bool, wall_obj, cap) -> None:
     for vertex in path.vertexes:
         robot_to_point_wo_constants(s, model_targets, vertex, wall_obj, cap, color)
+
+def robot_to_point(s: socket.socket, robot_cords: Tuple[int, int], grabber_cords: Tuple[int, int], point_cords: Tuple[int, int], wall_obj) -> None:
+    v = (point_cords[0] - robot_cords[0], point_cords[1] - robot_cords[1])
+    print(v)
+    dist = np.linalg.norm(v)
+
+    angle = angle_between_vectors(robot_cords, grabber_cords, point_cords)
+    rotate_by_angle(s, angle)
+    time.sleep(0.5)
+    forward_dist(s, correct_distance(dist, wall_obj))
+    time.sleep(0.5)
+
+
+def follow_by_path(s : socket.socket, model_targets : Model, path : Path, color : bool, wall_obj, cap) -> None:
+    for vertex in path.vertexes:
+        frame = get_frame(cap)
+        model_targets.get_boxes(frame)
+        robot_cords = robot_body_cords(model_targets, color)
+        grabber_cords = robot_grabber_cords(model_targets, robot_cords)
+        robot_to_point(s, robot_cords, grabber_cords, vertex, wall_obj)
