@@ -90,7 +90,7 @@ def follow_object_cube(onnx_model, s):
             cnt_not_obj += 1
         if cnt_not_obj > CNT_FRAME_NOT_OBJ:
             cap.release()
-            return
+            return False
         if DRAW:
             cv2.imshow("Image", frame)
             cv2.waitKey(1)
@@ -99,12 +99,15 @@ def follow_object_cube(onnx_model, s):
     cap.release()
     if DRAW:
         cv2.destroyAllWindows()
+    return True
 
 # полный цикл работы с кубикиком
 def work_cube(onnx_model, s):
     sf.start(s)
 
-    follow_object_cube(onnx_model, s)
+    res = follow_object_cube(onnx_model, s)
+    if not res:
+        return False
     time.sleep(0.5)
     while True:
         set_speed(s, SPEED_BACK)
@@ -121,13 +124,13 @@ def work_cube(onnx_model, s):
         cap.release()
         if DRAW:
             cv2.destroyAllWindows()
-        if res is not None:
+        if res:
             x, y, w, h = res.xywh[0]
             x, y, w, h = int(x), int(y), int(w), int(h)
             if x < 100 and y < 50:
-                return 0
+                return True
         else:
-            return 0
+            return True
         follow_object_cube(onnx_model, s)
 
 

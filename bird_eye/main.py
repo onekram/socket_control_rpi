@@ -25,7 +25,6 @@ def main():
     s = create_connect()
     sf.start(s)
     set_color(s, Color.GREEN)
-    prepare_bird_eye(s)
 
     model_walls = WallsModel('walls/walls.onnx')
     objs = model_walls.get_objs(frame)
@@ -47,6 +46,6 @@ def main():
     follow_by_path_test(model_targets, path, 1, cap)
 
 
-if __name__ == "__main__":
+if __name__ == "__mainn__":
     main()
 

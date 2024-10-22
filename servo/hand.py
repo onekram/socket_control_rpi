@@ -7,7 +7,7 @@ from servo.servo_movement import move_servo
 def start_position(s: socket.socket):
     move_servo(s, ServoKind.HAND, 10)
     move_servo(s, ServoKind.GRAB, 70)
-    move_servo(s, ServoKind.SHOULDER, 170)
+    move_servo(s, ServoKind.SHOULDER, 150)
     move_servo(s, ServoKind.ELBOW, 170)
 
 def prepare(s: socket.socket): # приготовится к захвату
@@ -61,9 +61,9 @@ def start_position_before_follow_ball(s: socket.socket):
     move_servo(s, ServoKind.SHOULDER, 170)
     move_servo(s, ServoKind.ELBOW, 120)
 
-def prepare_bird_eye(s: socket.socket): # положение перед кадром с верхней камеры
-    move_servo(s, ServoKind.GRAB, 75)
-    time.sleep(0.3)
-    move_servo(s, ServoKind.HAND, 95)
-    move_servo(s, ServoKind.SHOULDER, 100)
-    move_servo(s, ServoKind.ELBOW, 180)
+#def prepare_bird_eye(s: socket.socket): # положение перед кадром с верхней камеры
+#    move_servo(s, ServoKind.GRAB, 75)
+#    time.sleep(0.3)
+#    move_servo(s, ServoKind.HAND, 95)
+#    move_servo(s, ServoKind.SHOULDER, 100)
+#    move_servo(s, ServoKind.ELBOW, 180)

@@ -3,7 +3,7 @@ import time
 
 import cv2
 
-from parse_objects_camera.ball_neural import follow_object_ball
+from parse_objects_camera.ball_neural import work_ball
 from parse_objects_camera.cube_neural import work_cube
 from parse_objects_camera.get_res_neural import get_result_yolo
 from ultralytics import YOLO
@@ -108,5 +108,5 @@ if __name__ == "__main__":
     s = f.create_connect()
 
     sf.start(s)
-    work_cube(first_onnx_model, s)
+    work_ball(first_onnx_model, s)
     follow_object_basket(first_onnx_model, ObjectKind.RED_BASKET)

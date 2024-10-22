@@ -10,24 +10,26 @@ import functions as f
 from movement import *
 from servo import add_functions as sf
 from servo import hand
-from constants import *
+from parse_objects_camera.constants import *
 
 
 def hand_manip(s):
     prepare(s)
     time.sleep(1)
-    #set_speed(s, SPEED_FORWARD)
-    #forward_time(s, 0.1)
+    # set_speed(s, SPEED_FORWARD)
+    # forward_time(s, 0.1)
     time.sleep(1)
     catch_ball(s)
     time.sleep(1)
     hold(s)
+
 
 def draw_info(frame, x, y, w, h):
     cv2.putText(frame, f"x={x}, y = {y}, size={w * h}", (x, y),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 1, (0, 0, 0), 2)
     cv2.rectangle(frame, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (255, 255, 255), 2)
+
 
 def turn_to_catch_position(onnx_model, cap, s):
     d_x = 80
@@ -54,6 +56,7 @@ def turn_to_catch_position(onnx_model, cap, s):
                 cv2.imshow("Image", frame)
                 cv2.waitKey(1)
 
+
 def follow_object_ball(onnx_model, s):
     start_position_before_follow_ball(s)
     d_x = 200
@@ -70,43 +73,48 @@ def follow_object_ball(onnx_model, s):
             break
         res = get_result_yolo(onnx_model, frame, ObjectKind.BALL)
         if res is not None:
-             x, y, w, h = res.xywh[0]
-             x, y, w, h = int(x), int(y), int(w), int(h)
-             if DRAW:
-                 draw_info(frame, x, y, w, h)
-             if x < d_x - border:
-                 set_speed(s, SPEED_TURN)
-                 turn_to_left_without_stop(s)
-             elif x > d_x + border:
-                 set_speed(s, SPEED_TURN)
-                 turn_to_right_without_stop(s)
-             else:
-                 if w * h < obj_size:
-                     set_speed(s, SPEED_FORWARD)
-                     forward_without_stop(s)
-                 else:
-                     stop(s)
-                     break
+            x, y, w, h = res.xywh[0]
+            x, y, w, h = int(x), int(y), int(w), int(h)
+            if DRAW:
+                draw_info(frame, x, y, w, h)
+            if x < d_x - border:
+                set_speed(s, SPEED_TURN)
+                turn_to_left_without_stop(s)
+            elif x > d_x + border:
+                set_speed(s, SPEED_TURN)
+                turn_to_right_without_stop(s)
+            else:
+                if w * h < obj_size:
+                    set_speed(s, SPEED_FORWARD)
+                    forward_without_stop(s)
+                else:
+                    stop(s)
+                    break
         else:
             stop(s)
             cnt_not_obj += 1
         if cnt_not_obj > CNT_FRAME_NOT_OBJ:
             cap.release()
-            return
+            return False
         if DRAW:
             cv2.imshow("Image", frame)
             cv2.waitKey(1)
     turn_to_catch_position(onnx_model, cap, s)
     hand_manip(s)
     cap.release()
+
     if DRAW:
         cv2.destroyAllWindows()
+    return True
+
 
 # полный цикл работы с мячиком
 def work_ball(onnx_model, s):
     sf.start(s)
 
-    follow_object_ball(onnx_model, s)
+    res = follow_object_ball(onnx_model, s)
+    if not res:
+        return False
     while True:
         set_speed(s, SPEED_BACK)
         back_time(s, 1.5)
@@ -122,13 +130,13 @@ def work_ball(onnx_model, s):
         cap.release()
         if DRAW:
             cv2.destroyAllWindows()
-        if res is not None:
+        if res:
             x, y, w, h = res.xywh[0]
             x, y, w, h = int(x), int(y), int(w), int(h)
             if x < 100 and y < 50:
-                return 0
+                return True
         else:
-            return 0
+            return False
         follow_object_ball(onnx_model, s)
 
 
@@ -136,8 +144,8 @@ if __name__ == "__main__":
     logging.disable(logging.FATAL)
     onnx_model = YOLO('web_cam_model_v2.onnx')
     s = f.create_connect()
-    #sf.start(s)
+    # sf.start(s)
     work_ball(onnx_model, s)
-    #follow_object_ball(onnx_model, s)
+    # follow_object_ball(onnx_model, s)
     time.sleep(2)
     hand.put_down(s)
